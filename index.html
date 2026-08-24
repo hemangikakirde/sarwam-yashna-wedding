@@ -32,15 +32,17 @@
 
   <main>
     <section class="hero" id="home">
-      <div class="hero-parallax-bg parallax-layer" data-parallax="0.35" aria-hidden="true"></div>
-      <div class="hero-frame parallax-layer" data-parallax="0.12">
-        <div class="hero-mandala-wrap parallax-layer" data-parallax="0.38">
+      <div class="hero-parallax-bg" aria-hidden="true"></div>
+      <div class="hero-frame">
+        <div class="hero-mandala-wrap">
           <img class="hero-mandala-ring" src="assets/hero-mandala-ring.svg" alt="" aria-hidden="true">
         </div>
-        <div class="hero-content parallax-layer" data-parallax="-0.1">
+        <div class="hero-logo" aria-hidden="true">S<span>&amp;</span>Y</div>
+        <div class="hero-content-top">
           <p class="hero-ganesh">श्री गणेशाय नमः</p>
           <p class="eyebrow">WITH THE BLESSINGS OF OUR FAMILIES</p>
-          <div class="hero-logo" aria-hidden="true">S<span>&amp;</span>Y</div>
+        </div>
+        <div class="hero-content-bottom">
           <h1>Sarwam <em>&amp;</em> Yashna</h1>
           <p class="hero-subtitle">Two hearts, two traditions, one beautiful beginning.</p>
         </div>
@@ -49,13 +51,13 @@
     </section>
 
     <section class="dates section section--saffron" id="dates">
-      <img class="section-watermark parallax-layer" data-parallax="0.24" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <img class="section-watermark section-watermark--left parallax-layer" data-parallax="-0.18" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <div class="section-label parallax-layer" data-parallax="0.08">
+      <img class="section-watermark" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--left" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="section-label">
         <img class="section-icon" src="assets/icons/calendar.svg" alt="" width="22" height="22">
         <span>Save the Date</span>
       </div>
-      <div class="section-heading dates-heading parallax-layer" data-parallax="-0.06">
+      <div class="section-heading dates-heading">
         <div>
           <p class="script">One date to remember.</p>
           <h2>Scratch to reveal.</h2>
@@ -63,7 +65,7 @@
         <p class="heading-note">Gently scratch the card to uncover when we say forever.</p>
       </div>
 
-      <div class="scratch-stage parallax-layer" data-parallax="0.1">
+      <div class="scratch-stage">
         <div class="scratch-card" id="scratchCard">
           <div class="scratch-reveal">
             <p class="sr-eyebrow">Save the date</p>
@@ -74,10 +76,10 @@
           </div>
           <canvas class="scratch-canvas" aria-label="Scratch to reveal the wedding date"></canvas>
         </div>
-        <p class="scratch-hint-line">Scratch two or three times to reveal our date.</p>
+        <p class="scratch-hint-line">Scratch three times — the date will reveal on its own.</p>
       </div>
 
-      <div class="dates-countdown parallax-layer" data-parallax="-0.08" id="datesCountdown">
+      <div class="dates-countdown" id="datesCountdown">
         <p class="dates-countdown-label">Until we say <em>forever</em></p>
         <div class="dates-timer" id="timer">
           <div class="dates-timer-unit"><strong id="days">00</strong><span>Days</span></div>
@@ -91,16 +93,16 @@
       </div>
     </section>
 
-    <div class="toran parallax-layer" data-parallax="0.14" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
+    <div class="toran" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
 
     <section class="intro section section--ivory" id="story">
-      <img class="section-watermark parallax-layer" data-parallax="0.24" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <img class="section-watermark section-watermark--left parallax-layer" data-parallax="-0.18" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <div class="section-label parallax-layer" data-parallax="0.08">
+      <img class="section-watermark" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--left" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="section-label">
         <img class="section-icon" src="assets/icons/story.svg" alt="" width="22" height="22">
         <span>01 · Our Story</span>
       </div>
-      <div class="intro-grid reveal-on-scroll parallax-layer" data-parallax="0.06">
+      <div class="intro-grid reveal-on-scroll">
         <div>
           <p class="script">A little bit of Maharashtra,<br> a little bit of the South.</p>
           <h2>And a whole lot of love.</h2>
@@ -113,19 +115,21 @@
       </div>
     </section>
 
-    <section class="marquee parallax-layer" data-parallax="0.05" aria-label="Wedding blessings">
-      <div class="marquee-track">शुभ विवाह · सप्तपदी · प्रेम · परंपरा · संगीत · सदा सौभाग्यवती भव · </div>
-      <div class="marquee-track" aria-hidden="true">शुभ विवाह · सप्तपदी · प्रेम · परंपरा · संगीत · सदा सौभाग्यवती भव · </div>
+    <section class="marquee" aria-label="Blessing">
+      <div class="marquee-inner">
+        <span class="marquee-text">सर्व मंगल मांगल्ये शिवे सर्वार्थ साधिके। शरण्ये त्र्यंबके गौरी नारायणी नमोऽस्तु ते॥ · </span>
+        <span class="marquee-text" aria-hidden="true">सर्व मंगल मांगल्ये शिवे सर्वार्थ साधिके। शरण्ये त्र्यंबके गौरी नारायणी नमोऽस्तु ते॥ · </span>
+      </div>
     </section>
 
     <section class="events section section--celebration" id="events">
-      <img class="section-watermark parallax-layer" data-parallax="0.24" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <img class="section-watermark section-watermark--left parallax-layer" data-parallax="-0.18" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <div class="section-label parallax-layer" data-parallax="0.08">
+      <img class="section-watermark" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--left" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="section-label">
         <img class="section-icon" src="assets/icons/events.svg" alt="" width="22" height="22">
         <span>02 · The Celebrations</span>
       </div>
-      <div class="section-heading parallax-layer" data-parallax="-0.05">
+      <div class="section-heading">
         <div>
           <p class="script">Four days. A hundred memories.</p>
           <h2>Join us for every chapter.</h2>
@@ -133,7 +137,7 @@
         <p class="heading-note">Each celebration has its own time and venue — all the details you need, in one place.</p>
       </div>
 
-      <div class="event-timeline parallax-layer" data-parallax="0.08">
+      <div class="event-timeline">
         <div class="event-group">
           <header class="event-group-header">
             <div class="event-group-date"><span>12</span><small>Nov</small></div>
@@ -166,7 +170,7 @@
               </div>
               <div class="event-card-body">
                 <div class="event-copy">
-                  <h3>Sadhya</h3>
+                  <h3>Dakshina Vidhi</h3>
                   <p>An evening of togetherness, good food and the warmth of both our families.</p>
                 </div>
                 <div class="event-venue">
@@ -320,31 +324,31 @@
       </div>
     </section>
 
-    <div class="toran parallax-layer" data-parallax="0.14" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
+    <div class="toran" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
 
     <section class="quote section section--turmeric">
-      <img class="section-watermark section-watermark--light parallax-layer" data-parallax="0.28" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <img class="section-watermark section-watermark--light section-watermark--left parallax-layer" data-parallax="-0.22" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <div class="quote-mark parallax-layer" data-parallax="0.18">“</div>
-      <blockquote class="reveal-on-scroll parallax-layer" data-parallax="-0.1">Two families. Two cultures.<br><em>One forever.</em></blockquote>
-      <p class="parallax-layer" data-parallax="0.06">— Sarwam &amp; Yashna</p>
+      <img class="section-watermark section-watermark--light" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--light section-watermark--left" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="quote-mark">“</div>
+      <blockquote class="reveal-on-scroll">Two families. Two cultures.<br><em>One forever.</em></blockquote>
+      <p>— Sarwam &amp; Yashna</p>
     </section>
 
     <section class="gallery section section--rose" id="gallery">
-      <img class="section-watermark parallax-layer" data-parallax="0.24" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <img class="section-watermark section-watermark--left parallax-layer" data-parallax="-0.18" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <div class="section-label parallax-layer" data-parallax="0.08">
+      <img class="section-watermark" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--left" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="section-label">
         <img class="section-icon" src="assets/icons/gallery.svg" alt="" width="22" height="22">
         <span>03 · Moments</span>
       </div>
-      <div class="section-heading parallax-layer" data-parallax="-0.05">
+      <div class="section-heading">
         <div>
           <p class="script">The photos are coming soon.</p>
           <h2>Our little gallery.</h2>
         </div>
         <p class="heading-note">A stack of memories — tap, click, or swipe to flip through.</p>
       </div>
-      <div class="flipbook reveal-on-scroll parallax-layer" data-parallax="0.1" id="galleryFlipbook">
+      <div class="flipbook reveal-on-scroll" id="galleryFlipbook">
         <div class="flipbook-stage" aria-live="polite">
           <figure class="flipbook-card" data-caption="Mehendi moments">
             <img src="assets/placeholder-1.svg" alt="Mehendi celebration placeholder">
@@ -371,12 +375,12 @@
       </div>
     </section>
 
-    <div class="toran parallax-layer" data-parallax="0.14" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
+    <div class="toran" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
 
     <section class="rsvp section section--maroon" id="rsvp">
-      <img class="section-watermark section-watermark--light parallax-layer" data-parallax="0.26" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <img class="section-watermark section-watermark--light section-watermark--left parallax-layer" data-parallax="-0.2" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
-      <div class="rsvp-card reveal-on-scroll parallax-layer" data-parallax="0.08">
+      <img class="section-watermark section-watermark--light" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--light section-watermark--left" src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="rsvp-card reveal-on-scroll">
         <div class="section-label section-label--light">
           <img class="section-icon" src="assets/icons/rsvp.svg" alt="" width="22" height="22">
           <span>04 · RSVP</span>
@@ -395,7 +399,6 @@
               <option>Sorry, I can't make it</option>
             </select>
           </label>
-          <label>NUMBER OF GUESTS<input required name="guests" type="number" min="1" max="10" value="1"></label>
           <label class="full">A NOTE FOR THE COUPLE<textarea name="message" rows="3" placeholder="A little love, a song request, or just say hello…"></textarea></label>
           <button type="submit" class="primary-button">Send RSVP <span>→</span></button>
         </form>
@@ -404,10 +407,10 @@
     </section>
   </main>
 
-  <footer class="parallax-layer" data-parallax="0.12">
-    <div class="footer-monogram parallax-layer" data-parallax="-0.15">S<span>&</span>Y</div>
-    <p class="parallax-layer" data-parallax="0.06">Made with love for <b>Sarwam &amp; Yashna</b></p>
-    <p class="footer-date parallax-layer" data-parallax="-0.08">12 — 15 · NOVEMBER · 2026</p>
+  <footer>
+    <div class="footer-monogram">S<span>&</span>Y</div>
+    <p>Made with love for <b>Sarwam &amp; Yashna</b></p>
+    <p class="footer-date">12 — 15 · NOVEMBER · 2026</p>
   </footer>
 
   <script src="script.js"></script>
