@@ -1,4 +1,4 @@
-# Sarvam & Yashna Wedding Invitation
+# Sarwam & Yashna Wedding Invitation
 
 A responsive, single-page wedding invitation website inspired by the uploaded reference:
 - Maharashtrian + South Indian visual direction

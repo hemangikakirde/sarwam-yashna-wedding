@@ -1,4 +1,4 @@
-// Sarvam & Yashna — invitation interactions
+// Sarwam & Yashna — invitation interactions
 
 const weddingDate = new Date("2026-11-15T09:00:00+05:30").getTime();
 
