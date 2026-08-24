@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640" fill="none">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e8c878" stop-opacity=".2"/>
+      <stop offset="65%" stop-color="#c9923a" stop-opacity=".08"/>
+      <stop offset="100%" stop-color="#6b1420" stop-opacity="0"/>
+    </radialGradient>
+    <path id="petal-outer" d="M0-298 C10-270 18-238 0-210 C-18-238 -10-270 0-298Z"/>
+    <path id="petal-mid" d="M0-250 C8-228 14-200 0-178 C-14-200 -8-228 0-250Z"/>
+    <path id="petal-inner" d="M0-165 C6-148 10-128 0-112 C-10-128 -6-148 0-165Z"/>
+    <path id="paisley" d="M0-120 C18-105 22-78 8-58 C-2-72 -8-95 0-120Z"/>
+    <path id="teardrop" d="M0-42 C5-28 5-14 0 0 C-5-14 -5-28 0-42Z"/>
+  </defs>
+
+  <circle cx="320" cy="320" r="312" fill="url(#glow)"/>
+
+  <!-- Outer scalloped ring -->
+  <circle cx="320" cy="320" r="304" stroke="#e8c878" stroke-width="1.4" opacity=".6"/>
+  <circle cx="320" cy="320" r="296" stroke="#f0d080" stroke-width=".5" opacity=".35"/>
+  <g stroke="#e8c878" stroke-width=".55" opacity=".45" stroke-dasharray="2 5">
+    <circle cx="320" cy="320" r="288"/>
+  </g>
+
+  <!-- 24 outer lotus petals -->
+  <g transform="translate(320 320)" stroke="#f5e6c8" stroke-width=".65" fill="rgba(232,200,120,.06)" opacity=".55">
+    <use href="#petal-outer" transform="rotate(0)"/><use href="#petal-outer" transform="rotate(15)"/>
+    <use href="#petal-outer" transform="rotate(30)"/><use href="#petal-outer" transform="rotate(45)"/>
+    <use href="#petal-outer" transform="rotate(60)"/><use href="#petal-outer" transform="rotate(75)"/>
+    <use href="#petal-outer" transform="rotate(90)"/><use href="#petal-outer" transform="rotate(105)"/>
+    <use href="#petal-outer" transform="rotate(120)"/><use href="#petal-outer" transform="rotate(135)"/>
+    <use href="#petal-outer" transform="rotate(150)"/><use href="#petal-outer" transform="rotate(165)"/>
+    <use href="#petal-outer" transform="rotate(180)"/><use href="#petal-outer" transform="rotate(195)"/>
+    <use href="#petal-outer" transform="rotate(210)"/><use href="#petal-outer" transform="rotate(225)"/>
+    <use href="#petal-outer" transform="rotate(240)"/><use href="#petal-outer" transform="rotate(255)"/>
+    <use href="#petal-outer" transform="rotate(270)"/><use href="#petal-outer" transform="rotate(285)"/>
+    <use href="#petal-outer" transform="rotate(300)"/><use href="#petal-outer" transform="rotate(315)"/>
+    <use href="#petal-outer" transform="rotate(330)"/><use href="#petal-outer" transform="rotate(345)"/>
+  </g>
+
+  <!-- Dot ring -->
+  <g fill="#e8c878" opacity=".55">
+    <g transform="translate(320 320)">
+      <circle cx="0" cy="-275" r="2.2"/><circle cx="0" cy="275" r="2.2"/>
+      <circle cx="-275" cy="0" r="2.2"/><circle cx="275" cy="0" r="2.2"/>
+      <circle cx="-194" cy="-194" r="1.8"/><circle cx="194" cy="194" r="1.8"/>
+      <circle cx="194" cy="-194" r="1.8"/><circle cx="-194" cy="194" r="1.8"/>
+      <circle cx="0" cy="-255" r="1.5"/><circle cx="0" cy="255" r="1.5"/>
+      <circle cx="-255" cy="0" r="1.5"/><circle cx="255" cy="0" r="1.5"/>
+      <circle cx="-180" cy="-180" r="1.3"/><circle cx="180" cy="180" r="1.3"/>
+      <circle cx="180" cy="-180" r="1.3"/><circle cx="-180" cy="180" r="1.3"/>
+    </g>
+  </g>
+
+  <!-- Concentric filigree rings -->
+  <g stroke="#e8c878" opacity=".4">
+    <circle cx="320" cy="320" r="262" stroke-width=".7"/>
+    <circle cx="320" cy="320" r="248" stroke-width=".45" stroke-dasharray="1 6"/>
+    <circle cx="320" cy="320" r="232" stroke-width=".6"/>
+    <circle cx="320" cy="320" r="218" stroke-width=".4"/>
+    <circle cx="320" cy="320" r="198" stroke-width=".55" stroke-dasharray="3 5"/>
+    <circle cx="320" cy="320" r="182" stroke-width=".45"/>
+    <circle cx="320" cy="320" r="168" stroke-width=".5"/>
+    <circle cx="320" cy="320" r="148" stroke-width=".4" stroke-dasharray="2 4"/>
+    <circle cx="320" cy="320" r="132" stroke-width=".45"/>
+    <circle cx="320" cy="320" r="118" stroke-width=".35"/>
+  </g>
+
+  <!-- 16 mid petals -->
+  <g transform="translate(320 320)" stroke="#c9923a" stroke-width=".7" fill="rgba(201,146,58,.08)" opacity=".5">
+    <use href="#petal-mid" transform="rotate(0)"/><use href="#petal-mid" transform="rotate(22.5)"/>
+    <use href="#petal-mid" transform="rotate(45)"/><use href="#petal-mid" transform="rotate(67.5)"/>
+    <use href="#petal-mid" transform="rotate(90)"/><use href="#petal-mid" transform="rotate(112.5)"/>
+    <use href="#petal-mid" transform="rotate(135)"/><use href="#petal-mid" transform="rotate(157.5)"/>
+    <use href="#petal-mid" transform="rotate(180)"/><use href="#petal-mid" transform="rotate(202.5)"/>
+    <use href="#petal-mid" transform="rotate(225)"/><use href="#petal-mid" transform="rotate(247.5)"/>
+    <use href="#petal-mid" transform="rotate(270)"/><use href="#petal-mid" transform="rotate(292.5)"/>
+    <use href="#petal-mid" transform="rotate(315)"/><use href="#petal-mid" transform="rotate(337.5)"/>
+  </g>
+
+  <!-- 8-fold star lattice -->
+  <g transform="translate(320 320)" stroke="#f5e6c8" stroke-width=".5" opacity=".38">
+    <path d="M0-200 L46-46 L200 0 L46 46 L0 200 L-46 46 L-200 0 L-46-46Z"/>
+    <path d="M0-140 L32-32 L140 0 L32 32 L0 140 L-32 32 L-140 0 L-32-32Z"/>
+    <circle r="200" stroke-width=".4" stroke-dasharray="1 8"/>
+    <circle r="140" stroke-width=".35"/>
+  </g>
+
+  <!-- 16 paisley motifs -->
+  <g transform="translate(320 320)" stroke="#e8c878" stroke-width=".55" fill="rgba(232,200,120,.05)" opacity=".48">
+    <use href="#paisley" transform="rotate(0)"/><use href="#paisley" transform="rotate(22.5)"/>
+    <use href="#paisley" transform="rotate(45)"/><use href="#paisley" transform="rotate(67.5)"/>
+    <use href="#paisley" transform="rotate(90)"/><use href="#paisley" transform="rotate(112.5)"/>
+    <use href="#paisley" transform="rotate(135)"/><use href="#paisley" transform="rotate(157.5)"/>
+    <use href="#paisley" transform="rotate(180)"/><use href="#paisley" transform="rotate(202.5)"/>
+    <use href="#paisley" transform="rotate(225)"/><use href="#paisley" transform="rotate(247.5)"/>
+    <use href="#paisley" transform="rotate(270)"/><use href="#paisley" transform="rotate(292.5)"/>
+    <use href="#paisley" transform="rotate(315)"/><use href="#paisley" transform="rotate(337.5)"/>
+  </g>
+
+  <!-- Inner 12 petals -->
+  <g transform="translate(320 320)" stroke="#f0d080" stroke-width=".6" fill="rgba(240,208,128,.07)" opacity=".52">
+    <use href="#petal-inner" transform="rotate(0)"/><use href="#petal-inner" transform="rotate(30)"/>
+    <use href="#petal-inner" transform="rotate(60)"/><use href="#petal-inner" transform="rotate(90)"/>
+    <use href="#petal-inner" transform="rotate(120)"/><use href="#petal-inner" transform="rotate(150)"/>
+    <use href="#petal-inner" transform="rotate(180)"/><use href="#petal-inner" transform="rotate(210)"/>
+    <use href="#petal-inner" transform="rotate(240)"/><use href="#petal-inner" transform="rotate(270)"/>
+    <use href="#petal-inner" transform="rotate(300)"/><use href="#petal-inner" transform="rotate(330)"/>
+  </g>
+
+  <!-- Inner teardrop ring -->
+  <g transform="translate(320 320)" fill="#e8c878" opacity=".42">
+    <use href="#teardrop" transform="rotate(0)"/><use href="#teardrop" transform="rotate(30)"/>
+    <use href="#teardrop" transform="rotate(60)"/><use href="#teardrop" transform="rotate(90)"/>
+    <use href="#teardrop" transform="rotate(120)"/><use href="#teardrop" transform="rotate(150)"/>
+    <use href="#teardrop" transform="rotate(180)"/><use href="#teardrop" transform="rotate(210)"/>
+    <use href="#teardrop" transform="rotate(240)"/><use href="#teardrop" transform="rotate(270)"/>
+    <use href="#teardrop" transform="rotate(300)"/><use href="#teardrop" transform="rotate(330)"/>
+  </g>
+
+  <!-- Center rosette -->
+  <g transform="translate(320 320)" stroke="#e8c878" fill="rgba(232,200,120,.1)" opacity=".55">
+    <circle r="52" stroke-width=".8"/>
+    <circle r="42" stroke-width=".5" stroke-dasharray="2 3"/>
+    <circle r="32" stroke-width=".6"/>
+    <circle r="22" stroke-width=".45"/>
+    <circle r="12" stroke-width=".5" fill="rgba(232,200,120,.15)"/>
+    <path d="M0-52 L6-18 L40-10 L12 8 L22 42 L0 22 L-22 42 L-12 8 L-40-10 L-6-18Z" stroke-width=".55"/>
+    <path d="M0-32 L4-12 L24-6 L8 4 L14 26 L0 14 L-14 26 L-8 4 L-24-6 L-4-12Z" stroke-width=".45" opacity=".8"/>
+  </g>
+
+  <!-- Fine radiating spokes -->
+  <g transform="translate(320 320)" stroke="#f5e6c8" stroke-width=".35" opacity=".28">
+    <line x1="0" y1="-305" x2="0" y2="305"/>
+    <line x1="-305" y1="0" x2="305" y2="0"/>
+    <line x1="-216" y1="-216" x2="216" y2="216"/>
+    <line x1="216" y1="-216" x2="-216" y2="216"/>
+    <line x1="0" y1="-305" x2="0" y2="305" transform="rotate(22.5)"/>
+    <line x1="0" y1="-305" x2="0" y2="305" transform="rotate(45)"/>
+    <line x1="0" y1="-305" x2="0" y2="305" transform="rotate(67.5)"/>
+    <line x1="0" y1="-305" x2="0" y2="305" transform="rotate(112.5)"/>
+    <line x1="0" y1="-305" x2="0" y2="305" transform="rotate(135)"/>
+    <line x1="0" y1="-305" x2="0" y2="305" transform="rotate(157.5)"/>
+  </g>
+
+  <!-- Corner diamonds -->
+  <g stroke="#c9923a" stroke-width=".55" fill="rgba(201,146,58,.08)" opacity=".45">
+    <path d="M320 28 L328 44 L320 60 L312 44Z"/>
+    <path d="M320 580 L328 596 L320 612 L312 596Z"/>
+    <path d="M28 320 L44 328 L60 320 L44 312Z"/>
+    <path d="M580 320 L596 328 L612 320 L596 312Z"/>
+    <path d="M108 108 L118 118 L108 128 L98 118Z"/>
+    <path d="M532 108 L542 118 L532 128 L522 118Z"/>
+    <path d="M108 532 L118 542 L108 552 L98 542Z"/>
+    <path d="M532 532 L542 542 L532 552 L522 542Z"/>
+  </g>
+</svg>

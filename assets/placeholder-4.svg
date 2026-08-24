@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6b1420"/><stop offset="1" stop-color="#d4a017"/></linearGradient>
+  </defs>
+  <rect width="800" height="1100" fill="url(#bg)"/>
+  <g fill="none" stroke="#f5e0c8" stroke-width="1" opacity=".35">
+    <path d="M200 350 Q400 250 600 350 Q400 450 200 350Z"/>
+    <path d="M250 500 Q400 420 550 500 Q400 580 250 500Z"/>
+    <path d="M300 650 Q400 590 500 650 Q400 710 300 650Z"/>
+  </g>
+  <text x="400" y="780" text-anchor="middle" fill="#fff8f0" font-family="Georgia,serif" font-size="42" font-style="italic">Forever Begins</text>
+  <text x="400" y="830" text-anchor="middle" fill="#f0d8c8" font-family="Arial" font-size="14" letter-spacing="4">SARVAM &amp; YASHNA</text>
+</svg>

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1100">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#6b1420"/><stop offset="1" stop-color="#a83240"/></linearGradient>
+  </defs>
+  <rect width="800" height="1100" fill="url(#bg)"/>
+  <g stroke="#e8c878" stroke-width="1.2" fill="none" opacity=".45">
+    <path d="M400 200 L430 280 L520 280 L450 330 L475 410 L400 360 L325 410 L350 330 L280 280 L370 280 Z"/>
+    <circle cx="400" cy="400" r="160"/><circle cx="400" cy="400" r="200"/>
+  </g>
+  <text x="400" y="680" text-anchor="middle" fill="#fff5e6" font-family="Georgia,serif" font-size="42" font-style="italic">Our Families</text>
+  <text x="400" y="730" text-anchor="middle" fill="#e8c878" font-family="Arial" font-size="14" letter-spacing="4">SARVAM &amp; YASHNA</text>
+</svg>

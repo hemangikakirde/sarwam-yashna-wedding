@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 80" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="t" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#e8913a"/><stop offset="1" stop-color="#c45c26"/>
+    </linearGradient>
+  </defs>
+  <path d="M0 40 Q60 10 120 40 T240 40 T360 40 T480 40 T600 40 T720 40 T840 40 T960 40 T1080 40 T1200 40" fill="none" stroke="url(#t)" stroke-width="3" opacity=".85"/>
+  <g fill="#d4a017">
+    <circle cx="100" cy="38" r="5"/><circle cx="200" cy="42" r="4"/><circle cx="300" cy="36" r="5"/>
+    <circle cx="400" cy="40" r="4"/><circle cx="500" cy="38" r="5"/><circle cx="600" cy="42" r="6"/>
+    <circle cx="700" cy="36" r="5"/><circle cx="800" cy="40" r="4"/><circle cx="900" cy="38" r="5"/>
+    <circle cx="1000" cy="42" r="4"/><circle cx="1100" cy="36" r="5"/>
+  </g>
+  <path d="M95 50 Q100 65 105 50 M195 48 Q200 62 205 48 M295 52 Q300 68 305 52 M395 50 Q400 64 405 50 M495 48 Q500 62 505 48 M595 50 Q600 66 605 50 M695 52 Q700 68 705 52 M795 50 Q800 64 805 50 M895 48 Q900 62 905 48 M995 50 Q1000 66 1005 50 M1095 52 Q1100 68 1105 52" fill="none" stroke="#c9923a" stroke-width="2" stroke-linecap="round" opacity=".75"/>
+</svg>

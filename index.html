@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en" class="gate-lock">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6b1420" />
+  <meta name="description" content="The wedding celebration of Sarvam & Yashna — 12 to 15 November 2026." />
+  <title>Sarvam & Yashna — A Celebration of Love</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="assets/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=DM+Sans:wght@400;500;600&family=Italiana&family=Tiro+Devanagari+Marathi:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="gate-lock">
+  <div class="gate" id="gate">
+    <div class="gate-bg" aria-hidden="true"></div>
+    <button class="gate-skip" id="gateSkip" type="button">Skip ✕</button>
+    <div class="gate-inner">
+      <p class="gate-eyebrow">You are cordially invited</p>
+      <div class="envelope" id="envelope" role="button" tabindex="0" aria-expanded="false" aria-label="Open your wedding invitation">
+        <div class="env-body"></div>
+        <div class="env-flap"></div>
+        <div class="env-seal">S<span>&amp;</span>Y</div>
+      </div>
+      <p class="gate-cue" id="gateCue">Tap the envelope to open</p>
+    </div>
+  </div>
+
+  <div class="petal-layer" aria-hidden="true"></div>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-parallax-bg parallax-layer" data-parallax="0.35" aria-hidden="true"></div>
+      <div class="hero-frame parallax-layer" data-parallax="0.12">
+        <div class="hero-mandala-wrap parallax-layer" data-parallax="0.38">
+          <img class="hero-mandala-ring" src="assets/hero-mandala-ring.svg" alt="" aria-hidden="true">
+        </div>
+        <div class="hero-content parallax-layer" data-parallax="-0.1">
+          <p class="hero-ganesh">श्री गणेशाय नमः</p>
+          <p class="eyebrow">WITH THE BLESSINGS OF OUR FAMILIES</p>
+          <div class="hero-logo" aria-hidden="true">S<span>&amp;</span>Y</div>
+          <h1>Sarvam <em>&amp;</em> Yashna</h1>
+          <p class="hero-subtitle">Two hearts, two traditions, one beautiful beginning.</p>
+        </div>
+      </div>
+      <a class="scroll-cue" href="#dates"><span></span>Sit back &amp; enjoy</a>
+    </section>
+
+    <section class="dates section section--saffron" id="dates">
+      <img class="section-watermark parallax-layer" data-parallax="0.24" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--left parallax-layer" data-parallax="-0.18" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="section-label parallax-layer" data-parallax="0.08">
+        <img class="section-icon" src="assets/icons/calendar.svg" alt="" width="22" height="22">
+        <span>Save the Date</span>
+      </div>
+      <div class="section-heading dates-heading parallax-layer" data-parallax="-0.06">
+        <div>
+          <p class="script">One date to remember.</p>
+          <h2>Scratch to reveal.</h2>
+        </div>
+        <p class="heading-note">Gently scratch the card to uncover when we say forever.</p>
+      </div>
+
+      <div class="scratch-stage parallax-layer" data-parallax="0.1">
+        <div class="scratch-card" id="scratchCard">
+          <div class="scratch-reveal">
+            <p class="sr-eyebrow">Save the date</p>
+            <span class="sr-date">15</span>
+            <span class="sr-month">November</span>
+            <span class="sr-year">2026</span>
+            <p class="sr-title">Wedding &amp; Reception</p>
+          </div>
+          <canvas class="scratch-canvas" aria-label="Scratch to reveal the wedding date"></canvas>
+        </div>
+        <p class="scratch-hint-line">Scratch two or three times to reveal our date.</p>
+      </div>
+
+      <div class="dates-countdown parallax-layer" data-parallax="-0.08" id="datesCountdown">
+        <p class="dates-countdown-label">Until we say <em>forever</em></p>
+        <div class="dates-timer" id="timer">
+          <div class="dates-timer-unit"><strong id="days">00</strong><span>Days</span></div>
+          <div class="timer-sep" aria-hidden="true"></div>
+          <div class="dates-timer-unit"><strong id="hours">00</strong><span>Hours</span></div>
+          <div class="timer-sep" aria-hidden="true"></div>
+          <div class="dates-timer-unit"><strong id="minutes">00</strong><span>Minutes</span></div>
+          <div class="timer-sep" aria-hidden="true"></div>
+          <div class="dates-timer-unit"><strong id="seconds">00</strong><span>Seconds</span></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="toran parallax-layer" data-parallax="0.14" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
+
+    <section class="intro section section--ivory" id="story">
+      <img class="section-watermark parallax-layer" data-parallax="0.24" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--left parallax-layer" data-parallax="-0.18" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="section-label parallax-layer" data-parallax="0.08">
+        <img class="section-icon" src="assets/icons/story.svg" alt="" width="22" height="22">
+        <span>01 · Our Story</span>
+      </div>
+      <div class="intro-grid reveal-on-scroll parallax-layer" data-parallax="0.06">
+        <div>
+          <p class="script">A little bit of Maharashtra,<br> a little bit of the South.</p>
+          <h2>And a whole lot of love.</h2>
+        </div>
+        <div class="story-copy">
+          <p>Some stories begin with a grand plan. Ours began with two people, two families, and the quiet feeling that something wonderful was taking shape.</p>
+          <p>As we bring together our Maharashtrian and South Indian roots, we invite you to celebrate the rituals, laughter, food, music and memories that will make these four days unforgettable.</p>
+          <p class="blessing">With love,<br><b>Sarvam &amp; Yashna</b></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="marquee parallax-layer" data-parallax="0.05" aria-label="Wedding blessings">
+      <div class="marquee-track">शुभ विवाह · सप्तपदी · प्रेम · परंपरा · संगीत · सदा सौभाग्यवती भव · </div>
+      <div class="marquee-track" aria-hidden="true">शुभ विवाह · सप्तपदी · प्रेम · परंपरा · संगीत · सदा सौभाग्यवती भव · </div>
+    </section>
+
+    <section class="events section section--celebration" id="events">
+      <img class="section-watermark parallax-layer" data-parallax="0.24" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--left parallax-layer" data-parallax="-0.18" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="section-label parallax-layer" data-parallax="0.08">
+        <img class="section-icon" src="assets/icons/events.svg" alt="" width="22" height="22">
+        <span>02 · The Celebrations</span>
+      </div>
+      <div class="section-heading parallax-layer" data-parallax="-0.05">
+        <div>
+          <p class="script">Four days. A hundred memories.</p>
+          <h2>Join us for every chapter.</h2>
+        </div>
+        <p class="heading-note">Each celebration has its own time and venue — all the details you need, in one place.</p>
+      </div>
+
+      <div class="event-timeline parallax-layer" data-parallax="0.08">
+        <div class="event-group">
+          <header class="event-group-header">
+            <div class="event-group-date"><span>12</span><small>Nov</small></div>
+            <div class="event-group-line" aria-hidden="true"></div>
+          </header>
+          <div class="event-group-list">
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Morning</span>
+                <span class="event-tag">Tradition</span>
+              </div>
+              <div class="event-card-body">
+                <div class="event-copy">
+                  <h3>Grahmak</h3>
+                  <p>A sacred beginning to the wedding celebrations, surrounded by family and blessings.</p>
+                </div>
+                <div class="event-venue">
+                  <span class="event-venue-label">Venue</span>
+                  <p class="event-venue-name">The Residency</p>
+                  <p class="event-venue-city">Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=The+Residency,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Get directions →</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Evening</span>
+                <span class="event-tag">Feast</span>
+              </div>
+              <div class="event-card-body">
+                <div class="event-copy">
+                  <h3>Sadhya</h3>
+                  <p>An evening of togetherness, good food and the warmth of both our families.</p>
+                </div>
+                <div class="event-venue">
+                  <span class="event-venue-label">Venue</span>
+                  <p class="event-venue-name">Royal Orchid Banquet</p>
+                  <p class="event-venue-city">Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=Royal+Orchid+Banquet,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Get directions →</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="event-group">
+          <header class="event-group-header">
+            <div class="event-group-date"><span>13</span><small>Nov</small></div>
+            <div class="event-group-line" aria-hidden="true"></div>
+          </header>
+          <div class="event-group-list">
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Throughout the day</span>
+                <span class="event-tag">Colour</span>
+              </div>
+              <div class="event-card-body">
+                <div class="event-copy">
+                  <h3>Mehendi</h3>
+                  <p>Henna, colour, music and all the happy chaos that comes with a beautiful celebration.</p>
+                </div>
+                <div class="event-venue">
+                  <span class="event-venue-label">Venue</span>
+                  <p class="event-venue-name">Amanora The Fern</p>
+                  <p class="event-venue-city">Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=Amanora+The+Fern,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Get directions →</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="event-group">
+          <header class="event-group-header">
+            <div class="event-group-date"><span>14</span><small>Nov</small></div>
+            <div class="event-group-line" aria-hidden="true"></div>
+          </header>
+          <div class="event-group-list">
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Morning</span>
+                <span class="event-tag">Sunshine</span>
+              </div>
+              <div class="event-card-body">
+                <div class="event-copy">
+                  <h3>Haldi</h3>
+                  <p>Sunshine, turmeric and a little mischief before the big evening begins.</p>
+                </div>
+                <div class="event-venue">
+                  <span class="event-venue-label">Venue</span>
+                  <p class="event-venue-name">The Residency</p>
+                  <p class="event-venue-city">Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=The+Residency,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Get directions →</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Around 3:00 PM</span>
+                <span class="event-tag">Blessings</span>
+              </div>
+              <div class="event-card-body">
+                <div class="event-copy">
+                  <h3>Puja</h3>
+                  <p>A quiet pause for prayers, gratitude and blessings for the journey ahead.</p>
+                </div>
+                <div class="event-venue">
+                  <span class="event-venue-label">Venue</span>
+                  <p class="event-venue-name">Shree Ganesh Temple Hall</p>
+                  <p class="event-venue-city">Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=Shree+Ganesh+Temple+Hall,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Get directions →</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">6:00 PM</span>
+                <span class="event-tag">Music</span>
+              </div>
+              <div class="event-card-body">
+                <div class="event-copy">
+                  <h3>Sangeet</h3>
+                  <p>Come ready to dance. The stage is ours, but the spotlight belongs to everyone.</p>
+                </div>
+                <div class="event-venue">
+                  <span class="event-venue-label">Venue</span>
+                  <p class="event-venue-name">JW Marriott Lawn</p>
+                  <p class="event-venue-city">Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=JW+Marriott,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Get directions →</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="event-group">
+          <header class="event-group-header">
+            <div class="event-group-date"><span>15</span><small>Nov</small></div>
+            <div class="event-group-line" aria-hidden="true"></div>
+          </header>
+          <div class="event-group-list">
+            <article class="event-card featured">
+              <div class="event-card-head">
+                <span class="event-time">Morning</span>
+                <span class="event-tag">Forever</span>
+              </div>
+              <div class="event-card-body">
+                <div class="event-copy">
+                  <h3>The Wedding</h3>
+                  <p>The moment we've been waiting for — surrounded by the people who mean the most to us.</p>
+                </div>
+                <div class="event-venue">
+                  <span class="event-venue-label">Venue</span>
+                  <p class="event-venue-name">Grand Hyatt</p>
+                  <p class="event-venue-city">Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=Grand+Hyatt,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Get directions →</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Evening</span>
+                <span class="event-tag">Celebrate</span>
+              </div>
+              <div class="event-card-body">
+                <div class="event-copy">
+                  <h3>Reception</h3>
+                  <p>One last celebration — dressed up, well fed, and ready for one more round of memories.</p>
+                </div>
+                <div class="event-venue">
+                  <span class="event-venue-label">Venue</span>
+                  <p class="event-venue-name">Conrad Ballroom</p>
+                  <p class="event-venue-city">Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=Conrad+Ballroom,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Get directions →</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="toran parallax-layer" data-parallax="0.14" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
+
+    <section class="quote section section--turmeric">
+      <img class="section-watermark section-watermark--light parallax-layer" data-parallax="0.28" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--light section-watermark--left parallax-layer" data-parallax="-0.22" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="quote-mark parallax-layer" data-parallax="0.18">“</div>
+      <blockquote class="reveal-on-scroll parallax-layer" data-parallax="-0.1">Two families. Two cultures.<br><em>One forever.</em></blockquote>
+      <p class="parallax-layer" data-parallax="0.06">— Sarvam &amp; Yashna</p>
+    </section>
+
+    <section class="gallery section section--rose" id="gallery">
+      <img class="section-watermark parallax-layer" data-parallax="0.24" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--left parallax-layer" data-parallax="-0.18" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="section-label parallax-layer" data-parallax="0.08">
+        <img class="section-icon" src="assets/icons/gallery.svg" alt="" width="22" height="22">
+        <span>03 · Moments</span>
+      </div>
+      <div class="section-heading parallax-layer" data-parallax="-0.05">
+        <div>
+          <p class="script">The photos are coming soon.</p>
+          <h2>Our little gallery.</h2>
+        </div>
+        <p class="heading-note">A stack of memories — tap, click, or swipe to flip through.</p>
+      </div>
+      <div class="flipbook reveal-on-scroll parallax-layer" data-parallax="0.1" id="galleryFlipbook">
+        <div class="flipbook-stage" aria-live="polite">
+          <figure class="flipbook-card" data-caption="Mehendi moments">
+            <img src="assets/placeholder-1.svg" alt="Mehendi celebration placeholder">
+          </figure>
+          <figure class="flipbook-card" data-caption="Haldi &amp; joy">
+            <img src="assets/placeholder-2.svg" alt="Haldi celebration placeholder">
+          </figure>
+          <figure class="flipbook-card" data-caption="Our families">
+            <img src="assets/placeholder-3.svg" alt="Family celebration placeholder">
+          </figure>
+          <figure class="flipbook-card" data-caption="Forever begins">
+            <img src="assets/placeholder-4.svg" alt="Wedding celebration placeholder">
+          </figure>
+        </div>
+        <div class="flipbook-ui">
+          <button class="flipbook-btn flipbook-prev" type="button" aria-label="Previous photo">‹</button>
+          <div class="flipbook-meta">
+            <p class="flipbook-caption">Mehendi moments</p>
+            <span class="flipbook-count"><span class="flipbook-current">1</span> / <span class="flipbook-total">4</span></span>
+          </div>
+          <button class="flipbook-btn flipbook-next" type="button" aria-label="Next photo">›</button>
+        </div>
+        <div class="flipbook-dots" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <div class="toran parallax-layer" data-parallax="0.14" aria-hidden="true"><img src="assets/pattern-toran.svg" alt=""></div>
+
+    <section class="rsvp section section--maroon" id="rsvp">
+      <img class="section-watermark section-watermark--light parallax-layer" data-parallax="0.26" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <img class="section-watermark section-watermark--light section-watermark--left parallax-layer" data-parallax="-0.2" data-parallax-center src="assets/pattern-mandala.svg" alt="" aria-hidden="true">
+      <div class="rsvp-card reveal-on-scroll parallax-layer" data-parallax="0.08">
+        <div class="section-label section-label--light">
+          <img class="section-icon" src="assets/icons/rsvp.svg" alt="" width="22" height="22">
+          <span>04 · RSVP</span>
+        </div>
+        <p class="script">Your presence is our present.</p>
+        <h2>Will you celebrate with us?</h2>
+        <p class="rsvp-intro">Let us know you're coming. We can't wait to have you with us.</p>
+
+        <form id="rsvpForm">
+          <label>YOUR NAME<input required name="name" type="text" placeholder="Full name"></label>
+          <label>EMAIL OR PHONE<input required name="contact" type="text" placeholder="How can we reach you?"></label>
+          <label>WILL YOU JOIN US?
+            <select required name="attendance">
+              <option value="">Select one</option>
+              <option>Joyfully, yes!</option>
+              <option>Sorry, I can't make it</option>
+            </select>
+          </label>
+          <label>NUMBER OF GUESTS<input required name="guests" type="number" min="1" max="10" value="1"></label>
+          <label class="full">A NOTE FOR THE COUPLE<textarea name="message" rows="3" placeholder="A little love, a song request, or just say hello…"></textarea></label>
+          <button type="submit" class="primary-button">Send RSVP <span>→</span></button>
+        </form>
+        <p class="form-note" id="formNote"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="parallax-layer" data-parallax="0.12">
+    <div class="footer-monogram parallax-layer" data-parallax="-0.15">S<span>&</span>Y</div>
+    <p class="parallax-layer" data-parallax="0.06">Made with love for <b>Sarvam &amp; Yashna</b></p>
+    <p class="footer-date parallax-layer" data-parallax="-0.08">12 — 15 · NOVEMBER · 2026</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
