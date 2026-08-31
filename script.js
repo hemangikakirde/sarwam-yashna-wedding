@@ -1,4 +1,23 @@
-// Sarwam & Yashna — invitation interactions
+// Sarwam & Yashna - invitation interactions
+
+function runWhenIdle(fn) {
+  if ("requestIdleCallback" in window) requestIdleCallback(fn, { timeout: 2500 });
+  else setTimeout(fn, 600);
+}
+
+function whenVisible(el, fn, rootMargin = "120px") {
+  if (!el) return;
+  if (!("IntersectionObserver" in window)) {
+    fn();
+    return;
+  }
+  const observer = new IntersectionObserver((entries, obs) => {
+    if (!entries[0].isIntersecting) return;
+    obs.disconnect();
+    fn();
+  }, { rootMargin });
+  observer.observe(el);
+}
 
 const weddingDate = new Date("2026-11-15T09:00:00+05:30").getTime();
 
@@ -20,36 +39,81 @@ function updateCountdown() {
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
-// Floating marigold petals
-(function () {
+// Floating marigold petals - deferred so the first paint stays fast
+runWhenIdle(function () {
   const layer = document.querySelector(".petal-layer");
   if (!layer || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   const colors = ["#e8913a", "#d4a017", "#c45c6a", "#e8b84a", "#f0d080"];
-  for (let i = 0; i < 14; i++) {
+  const isMobile = window.matchMedia("(max-width: 800px)").matches;
+  const count = isMobile ? 12 : 18;
+
+  for (let i = 0; i < count; i++) {
     const petal = document.createElement("span");
     petal.className = "petal";
-    petal.style.left = `${Math.random() * 100}%`;
-    petal.style.setProperty("--petal-color", colors[i % colors.length]);
-    petal.style.setProperty("--fall-dur", `${10 + Math.random() * 14}s`);
-    petal.style.setProperty("--fall-delay", `${Math.random() * 12}s`);
+    petal.style.left = `${((i + Math.random() * 0.5) / count) * 100}%`;
+    petal.style.setProperty("--petal-color", colors[Math.floor(Math.random() * colors.length)]);
+    petal.style.setProperty("--petal-opacity", `${0.32 + Math.random() * 0.28}`);
+    petal.style.setProperty("--petal-scale", `${0.75 + Math.random() * 0.4}`);
+    petal.style.setProperty("--petal-drift", `${-20 + Math.random() * 60}px`);
+    petal.style.setProperty("--fall-dur", `${14 + Math.random() * 16}s`);
+    petal.style.setProperty("--fall-delay", `${Math.random() * 18}s`);
     petal.style.setProperty("--petal-rot", `${Math.random() * 360}deg`);
     layer.appendChild(petal);
   }
-})();
+});
 
-document.getElementById("rsvpForm").addEventListener("submit", function (event) {
+const rsvpForm = document.getElementById("rsvpForm");
+if (rsvpForm) rsvpForm.addEventListener("submit", async function (event) {
   event.preventDefault();
-  const data = new FormData(event.currentTarget);
-  const name = data.get("name");
-  const attendance = data.get("attendance");
+  const form = event.currentTarget;
+  const data = new FormData(form);
   const note = document.getElementById("formNote");
+  const submitBtn = document.getElementById("rsvpSubmit");
+  const inbox = (window.RSVP_EMAIL || "").trim();
 
-  note.textContent = attendance === "Joyfully, yes!"
-    ? `Thank you, ${name}! We can't wait to celebrate with you. ❤️`
-    : `Thank you for letting us know, ${name}. You'll be missed! ❤️`;
+  if (data.get("website")) return;
 
-  event.currentTarget.reset();
+  const name = String(data.get("name") || "").trim();
+  const contact = String(data.get("contact") || "").trim();
+  const attendance = String(data.get("attendance") || "").trim();
+  const message = String(data.get("message") || "").trim();
+
+  if (!inbox) {
+    note.textContent = "RSVP is not set up yet. Add your email in rsvp-config.js (see rsvp/SETUP.md).";
+    return;
+  }
+
+  if (submitBtn) submitBtn.disabled = true;
+  note.textContent = "Sending your RSVP…";
+
+  try {
+    const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(inbox)}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        name,
+        contact,
+        attendance,
+        message,
+        submitted: new Date().toISOString(),
+        _subject: "Wedding RSVP - Sarwam & Yashna",
+        _template: "table",
+        _captcha: "false"
+      })
+    });
+    const result = await response.json();
+    if (!result.success) throw new Error("Send failed");
+
+    note.textContent = attendance === "Joyfully, yes!"
+      ? `Thank you, ${name}! We can't wait to celebrate with you. ❤️`
+      : `Thank you for letting us know, ${name}. You'll be missed! ❤️`;
+    form.reset();
+  } catch (err) {
+    note.textContent = "We couldn't send your RSVP. Please try again in a moment.";
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
 });
 
 // Fade-in reveal on scroll
@@ -67,16 +131,75 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
   revealObserver.observe(el);
 });
 
+// Celebration day tabs
+(function () {
+  const dayNav = document.querySelector(".event-day-nav");
+  if (!dayNav) return;
+
+  const buttons = dayNav.querySelectorAll(".event-day-btn");
+  const groups = document.querySelectorAll(".event-group");
+
+  function showDay(day) {
+    buttons.forEach((btn) => {
+      const active = btn.dataset.day === day;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+
+    groups.forEach((group) => {
+      const active = group.dataset.day === day;
+      group.classList.toggle("is-active", active);
+      if (active) {
+        group.querySelectorAll(".event-card").forEach((card) => card.classList.add("is-visible"));
+      }
+    });
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => showDay(btn.dataset.day));
+  });
+
+  const initial = dayNav.querySelector(".event-day-btn.is-active");
+  if (initial) showDay(initial.dataset.day);
+})();
+
 // ===== Envelope opening gate =====
 (function () {
   const gate = document.getElementById("gate");
   const envelope = document.getElementById("envelope");
   const skipBtn = document.getElementById("gateSkip");
+  const hero = document.getElementById("home");
   if (!gate || !envelope) return;
 
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let opened = false;
   let dismissed = false;
+
+  function scrollToHero() {
+    window.scrollTo(0, 0);
+  }
+
+  function isGateLocked() {
+    return document.documentElement.classList.contains("gate-lock");
+  }
+
+  function focusHero() {
+    if (!hero) return;
+    hero.setAttribute("tabindex", "-1");
+    hero.focus({ preventScroll: true });
+  }
+
+  scrollToHero();
+
+  window.addEventListener("scroll", () => {
+    if (isGateLocked()) scrollToHero();
+  }, { passive: true });
+
+  document.addEventListener("click", (e) => {
+    if (!isGateLocked()) return;
+    const link = e.target.closest('a[href^="#"]');
+    if (link && link.getAttribute("href") !== "#") e.preventDefault();
+  }, true);
 
   function dismissGate() {
     if (dismissed) return;
@@ -84,9 +207,17 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
     gate.classList.add("closed");
     document.body.classList.remove("gate-lock");
     document.documentElement.classList.remove("gate-lock");
+
+    scrollToHero();
+    requestAnimationFrame(() => {
+      scrollToHero();
+      focusHero();
+    });
+
     setTimeout(() => {
       gate.style.display = "none";
       gate.setAttribute("aria-hidden", "true");
+      scrollToHero();
     }, prefersReduced ? 150 : 500);
   }
 
@@ -99,6 +230,7 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
   }
 
   envelope.addEventListener("click", (e) => {
+    e.preventDefault();
     e.stopPropagation();
     openEnvelope();
   });
@@ -110,13 +242,15 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
     }
   });
 
-  // Clicking anywhere once it's opening skips the remaining wait.
-  gate.addEventListener("click", () => {
-    if (opened) dismissGate();
+  gate.addEventListener("click", (e) => {
+    if (!opened) return;
+    if (e.target.closest("#envelope")) return;
+    dismissGate();
   });
 
   if (skipBtn) {
     skipBtn.addEventListener("click", (e) => {
+      e.preventDefault();
       e.stopPropagation();
       dismissGate();
     });
@@ -124,17 +258,19 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
 })();
 
 // ===== Scratch-to-reveal date card =====
-(function () {
+whenVisible(document.getElementById("scratchCard"), function () {
   const card = document.getElementById("scratchCard");
   if (!card) return;
 
   const canvas = card.querySelector(".scratch-canvas");
   if (!canvas) return;
 
-  const STROKES_TO_REVEAL = 3;
+  const STROKES_TO_REVEAL = 2;
   const MIN_MOTION_RATIO = 0.035;
   let revealed = false;
   let scratchStrokes = 0;
+  const calendarActions = document.getElementById("calendarActions");
+  const addToCalendarBtn = document.getElementById("addToCalendar");
   const ctx = canvas.getContext("2d");
   let dpr = Math.max(window.devicePixelRatio || 1, 1);
   let cssW = 0, cssH = 0;
@@ -143,13 +279,66 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
   let strokeDistance = 0;
   let gestureMoved = false;
 
+  function showCalendarAction() {
+    if (!calendarActions) return;
+    calendarActions.hidden = false;
+    requestAnimationFrame(() => calendarActions.classList.add("is-visible"));
+  }
+
+  function downloadWeddingIcs() {
+    const stamp = new Date().toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "PRODID:-//Sarwam & Yashna//Wedding//EN",
+      "CALSCALE:GREGORIAN",
+      "METHOD:PUBLISH",
+      "BEGIN:VEVENT",
+      "UID:sarwam-yashna-wedding-20261115@invitation",
+      `DTSTAMP:${stamp}`,
+      "DTSTART;VALUE=DATE:20261115",
+      "DTEND;VALUE=DATE:20261116",
+      "SUMMARY:Sarwam & Yashna - Wedding",
+      "DESCRIPTION:Wedding & Reception in Pune. Celebrations 12-15 November 2026.",
+      "LOCATION:Pune\\, Maharashtra\\, India",
+      "END:VEVENT",
+      "END:VCALENDAR"
+    ].join("\r\n");
+
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "sarwam-yashna-wedding.ics";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  }
+
   function revealCard() {
     if (revealed) return;
     revealed = true;
-    ctx.globalCompositeOperation = "destination-out";
-    ctx.fillRect(0, 0, cssW, cssH);
-    canvas.classList.add("revealed");
+    isDown = false;
+
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     card.classList.add("is-revealed");
+    setTimeout(showCalendarAction, prefersReduced ? 0 : 700);
+
+    if (prefersReduced) {
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillRect(0, 0, cssW, cssH);
+      canvas.classList.add("revealed");
+      return;
+    }
+
+    canvas.classList.add("revealed");
+    canvas.addEventListener("transitionend", function onFadeEnd(e) {
+      if (e.propertyName !== "opacity") return;
+      canvas.removeEventListener("transitionend", onFadeEnd);
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.fillRect(0, 0, cssW, cssH);
+    });
   }
 
   function registerScratchMotion() {
@@ -236,6 +425,8 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
   canvas.addEventListener("pointercancel", onPointerUp);
   canvas.addEventListener("pointerleave", onPointerUp);
 
+  if (addToCalendarBtn) addToCalendarBtn.addEventListener("click", downloadWeddingIcs);
+
   sizeCanvas();
   let resizeTimer;
   window.addEventListener("resize", () => {
@@ -243,10 +434,10 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(sizeCanvas, 200);
   });
-})();
+});
 
 // ===== Gallery flipbook =====
-(function () {
+whenVisible(document.getElementById("galleryFlipbook"), function () {
   const flipbook = document.getElementById("galleryFlipbook");
   if (!flipbook) return;
 
@@ -406,4 +597,4 @@ document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
   });
 
   applyStack();
-})();
+});
