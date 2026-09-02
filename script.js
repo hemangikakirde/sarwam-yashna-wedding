@@ -126,42 +126,9 @@ const revealObserver = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.08 });
 
-document.querySelectorAll(".reveal-on-scroll, .event-card").forEach((el) => {
-  el.classList.add("reveal-on-scroll");
+document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
   revealObserver.observe(el);
 });
-
-// Celebration day tabs
-(function () {
-  const dayNav = document.querySelector(".event-day-nav");
-  if (!dayNav) return;
-
-  const buttons = dayNav.querySelectorAll(".event-day-btn");
-  const groups = document.querySelectorAll(".event-group");
-
-  function showDay(day) {
-    buttons.forEach((btn) => {
-      const active = btn.dataset.day === day;
-      btn.classList.toggle("is-active", active);
-      btn.setAttribute("aria-pressed", active ? "true" : "false");
-    });
-
-    groups.forEach((group) => {
-      const active = group.dataset.day === day;
-      group.classList.toggle("is-active", active);
-      if (active) {
-        group.querySelectorAll(".event-card").forEach((card) => card.classList.add("is-visible"));
-      }
-    });
-  }
-
-  buttons.forEach((btn) => {
-    btn.addEventListener("click", () => showDay(btn.dataset.day));
-  });
-
-  const initial = dayNav.querySelector(".event-day-btn.is-active");
-  if (initial) showDay(initial.dataset.day);
-})();
 
 // ===== Envelope opening gate =====
 (function () {
@@ -299,8 +266,8 @@ whenVisible(document.getElementById("scratchCard"), function () {
       "DTSTART;VALUE=DATE:20261115",
       "DTEND;VALUE=DATE:20261116",
       "SUMMARY:Sarwam & Yashna - Wedding",
-      "DESCRIPTION:Wedding & Reception in Pune. Celebrations 12-15 November 2026.",
-      "LOCATION:Pune\\, Maharashtra\\, India",
+      "DESCRIPTION:Haldi & Sangeet on 14 Nov. Wedding muhurta 12:05 PM & Reception on 15 Nov at Samarambh Lawns\\, Thane.",
+      "LOCATION:Samarambh Lawns and Banquet\\, Ghodbunder Road\\, Ovala\\, Thane\\, Maharashtra",
       "END:VEVENT",
       "END:VCALENDAR"
     ].join("\r\n");
