@@ -333,8 +333,16 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       updateToggleUi();
       return;
     }
+    awaitingHome = false;
+    wantsPlay = false;
+    audio.muted = false;
     audio.currentTime = 0;
-    playMusic();
+    audio.volume = MUSIC_VOLUME;
+    if (audio.paused) {
+      audio.play().then(updateToggleUi).catch(updateToggleUi);
+    } else {
+      updateToggleUi();
+    }
   }
 
   function setMuted(muted) {
