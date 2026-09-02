@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#6b1420" />
-  <meta name="description" content="The wedding celebration of Sarwam & Yashna - 14 to 15 November 2026 at Samarambh Lawns, Thane." />
+  <meta name="description" content="The wedding celebration of Sarwam & Yashna - 12 to 15 November 2026." />
   <title>Sarwam & Yashna - A Celebration of Love</title>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="assets/favicon.svg" />
@@ -74,7 +74,7 @@
           <p class="script">One date to remember.</p>
           <h2>Scratch to reveal.</h2>
         </div>
-        <p class="heading-note">Gently scratch the card to uncover when we say forever.</p>
+        <p class="heading-note">Scratch twice - lift or pause briefly between strokes.</p>
       </div>
 
       <div class="scratch-stage">
@@ -94,7 +94,7 @@
           </div>
           <canvas class="scratch-canvas" aria-label="Scratch to reveal the wedding date"></canvas>
         </div>
-        <p class="scratch-hint-line">Scratch twice - the date will reveal on its own.</p>
+        <p class="scratch-hint-line" id="scratchHint">Scratch twice - lift or pause briefly between strokes.</p>
         <div class="calendar-actions" id="calendarActions" hidden>
           <button type="button" class="calendar-btn" id="addToCalendar">Add to calendar</button>
         </div>
@@ -148,18 +148,74 @@
       </div>
       <div class="section-heading">
         <div>
-          <p class="script">Two days. Four celebrations.</p>
+          <p class="script">Four days. A hundred memories.</p>
           <h2>Join us for every chapter.</h2>
         </div>
-        <p class="heading-note">All celebrations at Samarambh Lawns, Thane - times, venues, and directions below.</p>
+        <p class="heading-note">Pick a day below - times, venues, and directions for each celebration.</p>
       </div>
 
+      <nav class="event-day-nav" aria-label="Choose a celebration day">
+        <button type="button" class="event-day-btn" data-day="12" aria-pressed="false">12 Nov</button>
+        <button type="button" class="event-day-btn" data-day="13" aria-pressed="false">13 Nov</button>
+        <button type="button" class="event-day-btn" data-day="14" aria-pressed="false">14 Nov</button>
+        <button type="button" class="event-day-btn is-active" data-day="15" aria-pressed="true">15 Nov</button>
+      </nav>
+
       <div class="event-timeline">
-        <div class="event-group">
-          <header class="event-group-header">
-            <div class="event-group-date"><span>14</span><small>Nov</small></div>
-            <div class="event-group-line" aria-hidden="true"></div>
-          </header>
+        <div class="event-group" data-day="12">
+          <div class="event-group-list event-group-list--duo">
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Morning</span>
+                <span class="event-tag">Tradition</span>
+              </div>
+              <div class="event-card-body">
+                <h3>Grahmak</h3>
+                <p>A sacred beginning to the wedding celebrations, surrounded by family and blessings.</p>
+                <div class="event-meta">
+                  <p class="event-meta-venue"><strong>The Residency</strong> · Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=The+Residency,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Directions →</a>
+                </div>
+              </div>
+            </article>
+
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Evening</span>
+                <span class="event-tag">Feast</span>
+              </div>
+              <div class="event-card-body">
+                <h3>Dakshina Vidhi</h3>
+                <p>An evening of togetherness, good food and the warmth of both our families.</p>
+                <div class="event-meta">
+                  <p class="event-meta-venue"><strong>Royal Orchid Banquet</strong> · Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=Royal+Orchid+Banquet,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Directions →</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="event-group" data-day="13">
+          <div class="event-group-list">
+            <article class="event-card">
+              <div class="event-card-head">
+                <span class="event-time">Throughout the day</span>
+                <span class="event-tag">Colour</span>
+              </div>
+              <div class="event-card-body">
+                <h3>Mehendi</h3>
+                <p>Henna, colour, music and all the happy chaos that comes with a beautiful celebration.</p>
+                <div class="event-meta">
+                  <p class="event-meta-venue"><strong>Amanora The Fern</strong> · Pune, Maharashtra</p>
+                  <a class="event-directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=Amanora+The+Fern,+Pune,+Maharashtra" target="_blank" rel="noopener noreferrer">Directions →</a>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <div class="event-group" data-day="14">
           <div class="event-group-list event-group-list--duo">
             <article class="event-card">
               <div class="event-card-head">
@@ -193,11 +249,7 @@
           </div>
         </div>
 
-        <div class="event-group">
-          <header class="event-group-header">
-            <div class="event-group-date"><span>15</span><small>Nov</small></div>
-            <div class="event-group-line" aria-hidden="true"></div>
-          </header>
+        <div class="event-group is-active" data-day="15">
           <div class="event-group-list event-group-list--duo">
             <article class="event-card featured">
               <div class="event-card-head">
@@ -208,7 +260,7 @@
                 <h3>The Wedding</h3>
                 <p>Morning rituals from 7:30 AM, muhurta at 12:05 PM, followed by lunch.</p>
                 <div class="event-meta">
-                  <p class="event-meta-venue"><strong>Samarambh Lawns</strong> · Thane</p>
+                  <p class="event-meta-venue"><strong>Samarambh Lawns</strong> · Thane, Maharashtra</p>
                   <a class="event-directions" href="https://maps.app.goo.gl/A95F68MAezmrFNLD7" target="_blank" rel="noopener noreferrer">Directions →</a>
                 </div>
               </div>
@@ -223,7 +275,7 @@
                 <h3>Reception</h3>
                 <p>An evening celebration with family and friends, followed by dinner.</p>
                 <div class="event-meta">
-                  <p class="event-meta-venue"><strong>Samarambh Lawns</strong> · Thane</p>
+                  <p class="event-meta-venue"><strong>Samarambh Lawns</strong> · Thane, Maharashtra</p>
                   <a class="event-directions" href="https://maps.app.goo.gl/A95F68MAezmrFNLD7" target="_blank" rel="noopener noreferrer">Directions →</a>
                 </div>
               </div>
@@ -231,7 +283,40 @@
           </div>
         </div>
       </div>
+
+      <div class="location-flow reveal-on-scroll" id="directions">
+        <div class="location-rule" aria-hidden="true"><span>By order of the Marauders</span></div>
+        <div class="location-grid">
+          <div class="location-map">
+            <button type="button" class="location-map-btn" id="mapLightboxOpen" aria-label="Open the Marauder's Map directions">
+              <img class="location-map-preview" src="assets/marauders-map-preview.png" alt="Marauder's Map preview - tap to open directions to Samarambh Lawns" width="163" height="308" loading="lazy" decoding="async">
+            </button>
+            <p class="location-map-hint">Tap to unfold the map</p>
+            <p class="location-map-credit">Messrs. Moony, Wormtail, Padfoot &amp; Prongs approve this route.</p>
+          </div>
+          <div class="location-copy">
+            <p class="script">I solemnly swear we're up to forever.</p>
+            <p class="location-houses">He's <span class="house-ravenclaw">Ravenclaw</span> - he'll overthink every turn. She's <span class="house-slytherin">Slytherin</span> - she already knows the shortcut.</p>
+            <p class="location-spell"><em>Locatum Revelio</em> - if you're lost, tap the map.</p>
+            <h2>Samarambh Lawns</h2>
+            <p class="location-address">Thane, Maharashtra</p>
+            <p class="location-note">Platform 9¾ was booked. Thane was available. Haldi, Sangeet, Wedding and Reception are all at Samarambh - routes from Mumbai, Borivali, Ahmedabad and Nashik on the map. No Portkeys. Floo Network offline. Owls politely declined at the gate.</p>
+            <div class="location-actions">
+              <a class="event-directions location-maps-link" href="https://maps.app.goo.gl/A95F68MAezmrFNLD7" target="_blank" rel="noopener noreferrer">Muggle navigation →</a>
+              <div class="location-qr">
+                <img src="assets/samarambh-qr.png" alt="QR code for Samarambh Lawns directions" width="120" height="120" loading="lazy" decoding="async">
+                <p>Floo offline - scan instead</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </section>
+
+    <div class="map-lightbox" id="mapLightbox" hidden>
+      <button type="button" class="map-lightbox-close" aria-label="Close map">✕</button>
+      <img class="map-lightbox-full" src="assets/marauders-map.png" alt="Full directions map to Samarambh Lawns, Thane">
+    </div>
 
     <div class="toran toran--flip" aria-hidden="true"><img src="assets/pattern-toran.svg" alt="" loading="lazy" decoding="async"></div>
 

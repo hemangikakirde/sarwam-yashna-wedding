@@ -130,6 +130,60 @@ document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
   revealObserver.observe(el);
 });
 
+(function () {
+  const dayNav = document.querySelector(".event-day-nav");
+  if (!dayNav) return;
+
+  const buttons = dayNav.querySelectorAll(".event-day-btn");
+  const groups = document.querySelectorAll(".event-group");
+
+  function showDay(day) {
+    buttons.forEach((btn) => {
+      const active = btn.dataset.day === day;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+    groups.forEach((group) => {
+      group.classList.toggle("is-active", group.dataset.day === day);
+    });
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => showDay(btn.dataset.day));
+  });
+
+  const initial = dayNav.querySelector(".event-day-btn.is-active");
+  showDay(initial ? initial.dataset.day : "15");
+})();
+
+(function () {
+  const openBtn = document.getElementById("mapLightboxOpen");
+  const lightbox = document.getElementById("mapLightbox");
+  const closeBtn = lightbox?.querySelector(".map-lightbox-close");
+  if (!openBtn || !lightbox) return;
+
+  function openMap() {
+    lightbox.hidden = false;
+    document.body.classList.add("map-lightbox-open");
+    closeBtn?.focus();
+  }
+
+  function closeMap() {
+    lightbox.hidden = true;
+    document.body.classList.remove("map-lightbox-open");
+    openBtn.focus();
+  }
+
+  openBtn.addEventListener("click", openMap);
+  closeBtn?.addEventListener("click", closeMap);
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeMap();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !lightbox.hidden) closeMap();
+  });
+})();
+
 // ===== Envelope opening gate =====
 (function () {
   const gate = document.getElementById("gate");
@@ -150,6 +204,10 @@ document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
     return document.documentElement.classList.contains("gate-lock");
   }
 
+  function preventScrollWhileLocked() {
+    if (isGateLocked()) scrollToHero();
+  }
+
   function focusHero() {
     if (!hero) return;
     hero.setAttribute("tabindex", "-1");
@@ -157,10 +215,7 @@ document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
   }
 
   scrollToHero();
-
-  window.addEventListener("scroll", () => {
-    if (isGateLocked()) scrollToHero();
-  }, { passive: true });
+  window.addEventListener("scroll", preventScrollWhileLocked, { passive: true });
 
   document.addEventListener("click", (e) => {
     if (!isGateLocked()) return;
@@ -174,17 +229,14 @@ document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
     gate.classList.add("closed");
     document.body.classList.remove("gate-lock");
     document.documentElement.classList.remove("gate-lock");
+    window.removeEventListener("scroll", preventScrollWhileLocked);
 
-    scrollToHero();
-    requestAnimationFrame(() => {
-      scrollToHero();
-      focusHero();
-    });
+    if (window.scrollY > 0) scrollToHero();
+    requestAnimationFrame(focusHero);
 
     setTimeout(() => {
       gate.style.display = "none";
       gate.setAttribute("aria-hidden", "true");
-      scrollToHero();
     }, prefersReduced ? 150 : 500);
   }
 
@@ -233,18 +285,46 @@ whenVisible(document.getElementById("scratchCard"), function () {
   if (!canvas) return;
 
   const STROKES_TO_REVEAL = 2;
-  const MIN_MOTION_RATIO = 0.035;
+  const MIN_STROKE_DISTANCE_RATIO = 0.1;
+  const STROKE_PAUSE_MS = 160;
   let revealed = false;
   let scratchStrokes = 0;
   const calendarActions = document.getElementById("calendarActions");
   const addToCalendarBtn = document.getElementById("addToCalendar");
+  const scratchHint = document.getElementById("scratchHint");
   const ctx = canvas.getContext("2d");
   let dpr = Math.max(window.devicePixelRatio || 1, 1);
   let cssW = 0, cssH = 0;
   let isDown = false;
+  let activePointerId = null;
   let lastX = 0, lastY = 0;
   let strokeDistance = 0;
-  let gestureMoved = false;
+  let strokePauseTimer = null;
+
+  function minStrokeDistance() {
+    return cssW * MIN_STROKE_DISTANCE_RATIO;
+  }
+
+  function clearStrokePauseTimer() {
+    if (!strokePauseTimer) return;
+    clearTimeout(strokePauseTimer);
+    strokePauseTimer = null;
+  }
+
+  function tryCompleteStroke() {
+    if (!isDown || revealed || strokeDistance < minStrokeDistance()) return false;
+    registerScratchMotion();
+    strokeDistance = 0;
+    return true;
+  }
+
+  function scheduleStrokePauseCheck() {
+    clearStrokePauseTimer();
+    strokePauseTimer = setTimeout(() => {
+      strokePauseTimer = null;
+      tryCompleteStroke();
+    }, STROKE_PAUSE_MS);
+  }
 
   function showCalendarAction() {
     if (!calendarActions) return;
@@ -267,7 +347,7 @@ whenVisible(document.getElementById("scratchCard"), function () {
       "DTEND;VALUE=DATE:20261116",
       "SUMMARY:Sarwam & Yashna - Wedding",
       "DESCRIPTION:Haldi & Sangeet on 14 Nov. Wedding muhurta 12:05 PM & Reception on 15 Nov at Samarambh Lawns\\, Thane.",
-      "LOCATION:Samarambh Lawns and Banquet\\, Ghodbunder Road\\, Ovala\\, Thane\\, Maharashtra",
+      "LOCATION:Samarambh Lawns\\, Thane\\, Maharashtra",
       "END:VEVENT",
       "END:VCALENDAR"
     ].join("\r\n");
@@ -287,6 +367,13 @@ whenVisible(document.getElementById("scratchCard"), function () {
     if (revealed) return;
     revealed = true;
     isDown = false;
+    clearStrokePauseTimer();
+
+    if (scratchHint) {
+      scratchHint.textContent = "";
+      scratchHint.classList.remove("scratch-hint-line--once-more");
+      scratchHint.classList.add("scratch-hint-line--hidden");
+    }
 
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     card.classList.add("is-revealed");
@@ -308,9 +395,19 @@ whenVisible(document.getElementById("scratchCard"), function () {
     });
   }
 
+  function updateScratchHint() {
+    if (!scratchHint || revealed) return;
+    if (scratchStrokes >= STROKES_TO_REVEAL - 1) {
+      scratchHint.textContent = "Once more - scratch again to reveal.";
+      scratchHint.classList.add("scratch-hint-line--once-more");
+    }
+  }
+
   function registerScratchMotion() {
     if (revealed) return;
     scratchStrokes++;
+    if (scratchStrokes === 1) card.classList.add("scratch-card--one-stroke");
+    updateScratchHint();
     if (scratchStrokes >= STROKES_TO_REVEAL) revealCard();
   }
 
@@ -356,10 +453,11 @@ whenVisible(document.getElementById("scratchCard"), function () {
   }
 
   function onPointerDown(e) {
-    if (revealed) return;
+    if (revealed || isDown) return;
     isDown = true;
+    activePointerId = e.pointerId;
     strokeDistance = 0;
-    gestureMoved = false;
+    clearStrokePauseTimer();
     canvas.setPointerCapture(e.pointerId);
     const p = pointerPos(e);
     lastX = p.x; lastY = p.y;
@@ -367,30 +465,38 @@ whenVisible(document.getElementById("scratchCard"), function () {
   }
 
   function onPointerMove(e) {
-    if (!isDown || revealed) return;
+    if (!isDown || revealed || e.pointerId !== activePointerId) return;
     const p = pointerPos(e);
     const step = Math.hypot(p.x - lastX, p.y - lastY);
-    if (step > 1) gestureMoved = true;
+    if (step < 0.5) return;
     strokeDistance += step;
     strokeTo(p.x, p.y);
     lastX = p.x; lastY = p.y;
+
+    if (scratchStrokes === 1 && strokeDistance >= minStrokeDistance()) {
+      clearStrokePauseTimer();
+      tryCompleteStroke();
+      return;
+    }
+
+    scheduleStrokePauseCheck();
   }
 
-  function onPointerUp() {
-    if (!isDown) return;
+  function onPointerUp(e) {
+    if (!isDown || e.pointerId !== activePointerId) return;
     isDown = false;
-    if (gestureMoved || strokeDistance >= cssW * MIN_MOTION_RATIO) {
-      registerScratchMotion();
-    }
+    activePointerId = null;
+    clearStrokePauseTimer();
+    try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+
+    tryCompleteStroke();
     strokeDistance = 0;
-    gestureMoved = false;
   }
 
   canvas.addEventListener("pointerdown", onPointerDown);
   canvas.addEventListener("pointermove", onPointerMove);
   canvas.addEventListener("pointerup", onPointerUp);
   canvas.addEventListener("pointercancel", onPointerUp);
-  canvas.addEventListener("pointerleave", onPointerUp);
 
   if (addToCalendarBtn) addToCalendarBtn.addEventListener("click", downloadWeddingIcs);
 
