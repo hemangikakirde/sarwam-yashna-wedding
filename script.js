@@ -1,5 +1,13 @@
 // Sarwam & Yashna - invitation interactions
 
+function isTouchLikePointer(e) {
+  return !e.pointerType || e.pointerType === "touch" || e.pointerType === "pen";
+}
+
+function blockTouchScroll(e) {
+  if (e.cancelable) e.preventDefault();
+}
+
 function runWhenIdle(fn) {
   if ("requestIdleCallback" in window) requestIdleCallback(fn, { timeout: 2500 });
   else setTimeout(fn, 600);
@@ -22,6 +30,12 @@ function whenVisible(el, fn, rootMargin = "120px") {
 const weddingDate = new Date("2026-11-15T09:00:00+05:30").getTime();
 
 function updateCountdown() {
+  const daysEl = document.getElementById("days");
+  const hoursEl = document.getElementById("hours");
+  const minutesEl = document.getElementById("minutes");
+  const secondsEl = document.getElementById("seconds");
+  if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
+
   const now = Date.now();
   let distance = weddingDate - now;
   if (distance < 0) distance = 0;
@@ -31,10 +45,10 @@ function updateCountdown() {
   const m = Math.floor((distance % 3600000) / 60000);
   const s = Math.floor((distance % 60000) / 1000);
 
-  document.getElementById("days").textContent = String(d).padStart(2, "0");
-  document.getElementById("hours").textContent = String(h).padStart(2, "0");
-  document.getElementById("minutes").textContent = String(m).padStart(2, "0");
-  document.getElementById("seconds").textContent = String(s).padStart(2, "0");
+  daysEl.textContent = String(d).padStart(2, "0");
+  hoursEl.textContent = String(h).padStart(2, "0");
+  minutesEl.textContent = String(m).padStart(2, "0");
+  secondsEl.textContent = String(s).padStart(2, "0");
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
@@ -124,11 +138,17 @@ const revealObserver = new IntersectionObserver((entries) => {
       revealObserver.unobserve(entry.target);
     }
   });
-}, { threshold: 0.08 });
+}, { threshold: 0.08, rootMargin: "0px 0px 10% 0px" });
 
 document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
   revealObserver.observe(el);
 });
+
+if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
+    el.classList.add("is-visible");
+  });
+}
 
 (function () {
   const dayNav = document.querySelector(".event-day-nav");
@@ -162,16 +182,41 @@ document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
   const closeBtn = lightbox?.querySelector(".map-lightbox-close");
   if (!openBtn || !lightbox) return;
 
+  let scrollLockY = 0;
+  let lightboxTouchBlocker = null;
+
+  function lockScroll() {
+    scrollLockY = window.scrollY || window.pageYOffset || 0;
+    document.documentElement.classList.add("map-lightbox-open");
+    document.body.style.top = `-${scrollLockY}px`;
+    document.body.classList.add("map-lightbox-open");
+    lightboxTouchBlocker = (e) => {
+      if (!lightbox.hidden) blockTouchScroll(e);
+    };
+    document.addEventListener("touchmove", lightboxTouchBlocker, { passive: false });
+  }
+
+  function unlockScroll() {
+    document.documentElement.classList.remove("map-lightbox-open");
+    document.body.classList.remove("map-lightbox-open");
+    document.body.style.top = "";
+    if (lightboxTouchBlocker) {
+      document.removeEventListener("touchmove", lightboxTouchBlocker);
+      lightboxTouchBlocker = null;
+    }
+    window.scrollTo(0, scrollLockY);
+  }
+
   function openMap() {
     lightbox.hidden = false;
-    document.body.classList.add("map-lightbox-open");
-    closeBtn?.focus();
+    lockScroll();
+    closeBtn?.focus({ preventScroll: true });
   }
 
   function closeMap() {
     lightbox.hidden = true;
-    document.body.classList.remove("map-lightbox-open");
-    openBtn.focus();
+    unlockScroll();
+    openBtn.focus({ preventScroll: true });
   }
 
   openBtn.addEventListener("click", openMap);
@@ -217,6 +262,11 @@ document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
   scrollToHero();
   window.addEventListener("scroll", preventScrollWhileLocked, { passive: true });
 
+  const gateTouchBlocker = (e) => {
+    if (isGateLocked()) blockTouchScroll(e);
+  };
+  document.addEventListener("touchmove", gateTouchBlocker, { passive: false });
+
   document.addEventListener("click", (e) => {
     if (!isGateLocked()) return;
     const link = e.target.closest('a[href^="#"]');
@@ -230,6 +280,7 @@ document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
     document.body.classList.remove("gate-lock");
     document.documentElement.classList.remove("gate-lock");
     window.removeEventListener("scroll", preventScrollWhileLocked);
+    document.removeEventListener("touchmove", gateTouchBlocker);
 
     if (window.scrollY > 0) scrollToHero();
     requestAnimationFrame(focusHero);
@@ -277,7 +328,7 @@ document.querySelectorAll(".reveal-on-scroll").forEach((el) => {
 })();
 
 // ===== Scratch-to-reveal date card =====
-whenVisible(document.getElementById("scratchCard"), function () {
+(function initScratchCard() {
   const card = document.getElementById("scratchCard");
   if (!card) return;
 
@@ -285,14 +336,14 @@ whenVisible(document.getElementById("scratchCard"), function () {
   if (!canvas) return;
 
   const STROKES_TO_REVEAL = 2;
-  const MIN_STROKE_DISTANCE_RATIO = 0.1;
-  const STROKE_PAUSE_MS = 160;
+  const MIN_STROKE_DISTANCE_RATIO = 0.08;
+  const STROKE_PAUSE_MS = 180;
   let revealed = false;
   let scratchStrokes = 0;
   const calendarActions = document.getElementById("calendarActions");
   const addToCalendarBtn = document.getElementById("addToCalendar");
   const scratchHint = document.getElementById("scratchHint");
-  const ctx = canvas.getContext("2d");
+  const ctx = canvas.getContext("2d", { willReadFrequently: false });
   let dpr = Math.max(window.devicePixelRatio || 1, 1);
   let cssW = 0, cssH = 0;
   let isDown = false;
@@ -300,6 +351,10 @@ whenVisible(document.getElementById("scratchCard"), function () {
   let lastX = 0, lastY = 0;
   let strokeDistance = 0;
   let strokePauseTimer = null;
+  let lastCanvasW = 0;
+  let lastCanvasH = 0;
+  let hasScratchMarks = false;
+  let gestureEnded = false;
 
   function minStrokeDistance() {
     return cssW * MIN_STROKE_DISTANCE_RATIO;
@@ -311,7 +366,13 @@ whenVisible(document.getElementById("scratchCard"), function () {
     strokePauseTimer = null;
   }
 
-  function tryCompleteStroke() {
+  function registerStrokeFromDistance(distance) {
+    if (revealed || distance < minStrokeDistance()) return false;
+    registerScratchMotion();
+    return true;
+  }
+
+  function tryCompleteStrokeWhileDown() {
     if (!isDown || revealed || strokeDistance < minStrokeDistance()) return false;
     registerScratchMotion();
     strokeDistance = 0;
@@ -322,7 +383,7 @@ whenVisible(document.getElementById("scratchCard"), function () {
     clearStrokePauseTimer();
     strokePauseTimer = setTimeout(() => {
       strokePauseTimer = null;
-      tryCompleteStroke();
+      tryCompleteStrokeWhileDown();
     }, STROKE_PAUSE_MS);
   }
 
@@ -421,16 +482,27 @@ whenVisible(document.getElementById("scratchCard"), function () {
 
   function sizeCanvas() {
     const rect = card.getBoundingClientRect();
-    cssW = rect.width;
-    cssH = rect.height;
+    const nextW = rect.width;
+    const nextH = rect.height;
+    if (nextW < 1 || nextH < 1) return;
+    if (Math.abs(nextW - lastCanvasW) < 1 && Math.abs(nextH - lastCanvasH) < 1) return;
+    lastCanvasW = nextW;
+    lastCanvasH = nextH;
+    cssW = nextW;
+    cssH = nextH;
     dpr = Math.max(window.devicePixelRatio || 1, 1);
     canvas.width = Math.round(cssW * dpr);
     canvas.height = Math.round(cssH * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    paintFoil();
+    if (!hasScratchMarks) paintFoil();
+  }
+
+  function markScratch() {
+    hasScratchMarks = true;
   }
 
   function scratchAt(x, y) {
+    markScratch();
     const r = cssW * 0.09;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -438,6 +510,7 @@ whenVisible(document.getElementById("scratchCard"), function () {
   }
 
   function strokeTo(x, y) {
+    markScratch();
     ctx.lineJoin = "round";
     ctx.lineCap = "round";
     ctx.lineWidth = cssW * 0.14;
@@ -447,70 +520,167 @@ whenVisible(document.getElementById("scratchCard"), function () {
     ctx.stroke();
   }
 
-  function pointerPos(e) {
+  function pointerPosFromClient(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    const scaleX = rect.width ? cssW / rect.width : 1;
+    const scaleY = rect.height ? cssH / rect.height : 1;
+    return {
+      x: (clientX - rect.left) * scaleX,
+      y: (clientY - rect.top) * scaleY,
+    };
   }
 
-  function onPointerDown(e) {
-    if (revealed || isDown) return;
+  function pointerPos(e) {
+    return pointerPosFromClient(e.clientX, e.clientY);
+  }
+
+  function beginStroke(clientX, clientY, pointerId) {
+    if (revealed) return;
     isDown = true;
-    activePointerId = e.pointerId;
+    gestureEnded = false;
+    activePointerId = pointerId;
     strokeDistance = 0;
     clearStrokePauseTimer();
-    canvas.setPointerCapture(e.pointerId);
-    const p = pointerPos(e);
+    const p = pointerPosFromClient(clientX, clientY);
     lastX = p.x; lastY = p.y;
     scratchAt(p.x, p.y);
   }
 
-  function onPointerMove(e) {
-    if (!isDown || revealed || e.pointerId !== activePointerId) return;
-    const p = pointerPos(e);
+  function moveStroke(clientX, clientY, pointerId) {
+    if (!isDown || revealed || pointerId !== activePointerId) return;
+    const p = pointerPosFromClient(clientX, clientY);
     const step = Math.hypot(p.x - lastX, p.y - lastY);
-    if (step < 0.5) return;
+    if (step < 0.35) return;
     strokeDistance += step;
     strokeTo(p.x, p.y);
     lastX = p.x; lastY = p.y;
 
     if (scratchStrokes === 1 && strokeDistance >= minStrokeDistance()) {
       clearStrokePauseTimer();
-      tryCompleteStroke();
+      tryCompleteStrokeWhileDown();
       return;
     }
 
     scheduleStrokePauseCheck();
   }
 
-  function onPointerUp(e) {
-    if (!isDown || e.pointerId !== activePointerId) return;
+  function finishStroke(pointerId) {
+    if (!isDown || pointerId !== activePointerId || gestureEnded) return;
+    gestureEnded = true;
+    clearStrokePauseTimer();
+    const distance = strokeDistance;
     isDown = false;
     activePointerId = null;
-    clearStrokePauseTimer();
-    try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
-
-    tryCompleteStroke();
     strokeDistance = 0;
+    registerStrokeFromDistance(distance);
   }
 
-  canvas.addEventListener("pointerdown", onPointerDown);
-  canvas.addEventListener("pointermove", onPointerMove);
-  canvas.addEventListener("pointerup", onPointerUp);
-  canvas.addEventListener("pointercancel", onPointerUp);
+  function onPointerDown(e) {
+    if (revealed) return;
+    if (isDown && e.pointerId !== activePointerId) return;
+    if (isTouchLikePointer(e)) blockTouchScroll(e);
+    try { canvas.setPointerCapture(e.pointerId); } catch (_) {}
+    beginStroke(e.clientX, e.clientY, e.pointerId);
+  }
+
+  function onPointerMove(e) {
+    if (!isDown || revealed || e.pointerId !== activePointerId) return;
+    if (isTouchLikePointer(e)) blockTouchScroll(e);
+    moveStroke(e.clientX, e.clientY, e.pointerId);
+  }
+
+  function endPointer(e) {
+    if (!isDown || e.pointerId !== activePointerId || gestureEnded) return;
+    try { canvas.releasePointerCapture(e.pointerId); } catch (_) {}
+    finishStroke(e.pointerId);
+  }
+
+  if (window.PointerEvent) {
+    canvas.addEventListener("pointerdown", onPointerDown);
+    canvas.addEventListener("pointermove", onPointerMove);
+    canvas.addEventListener("pointerup", endPointer);
+    canvas.addEventListener("pointercancel", endPointer);
+  } else {
+    const mouseId = 1;
+    const touchId = 2;
+
+    canvas.addEventListener("mousedown", (e) => {
+      if (revealed || e.button !== 0) return;
+      e.preventDefault();
+      beginStroke(e.clientX, e.clientY, mouseId);
+    });
+    canvas.addEventListener("mousemove", (e) => {
+      if (!isDown || activePointerId !== mouseId) return;
+      e.preventDefault();
+      moveStroke(e.clientX, e.clientY, mouseId);
+    });
+    window.addEventListener("mouseup", (e) => {
+      if (!isDown || activePointerId !== mouseId) return;
+      finishStroke(mouseId);
+    });
+
+    canvas.addEventListener("touchstart", (e) => {
+      if (revealed || isDown) return;
+      const t = e.changedTouches[0];
+      if (!t) return;
+      blockTouchScroll(e);
+      beginStroke(t.clientX, t.clientY, touchId);
+    }, { passive: false });
+    canvas.addEventListener("touchmove", (e) => {
+      if (!isDown || activePointerId !== touchId) return;
+      blockTouchScroll(e);
+      const t = e.changedTouches[0];
+      if (!t) return;
+      moveStroke(t.clientX, t.clientY, touchId);
+    }, { passive: false });
+    canvas.addEventListener("touchend", (e) => {
+      if (!isDown || activePointerId !== touchId) return;
+      finishStroke(touchId);
+    });
+    canvas.addEventListener("touchcancel", (e) => {
+      if (!isDown || activePointerId !== touchId) return;
+      finishStroke(touchId);
+    });
+  }
+
+  canvas.addEventListener("touchmove", (e) => {
+    if (isDown) blockTouchScroll(e);
+  }, { passive: false });
 
   if (addToCalendarBtn) addToCalendarBtn.addEventListener("click", downloadWeddingIcs);
 
-  sizeCanvas();
-  let resizeTimer;
-  window.addEventListener("resize", () => {
-    if (revealed) return;
-    clearTimeout(resizeTimer);
-    resizeTimer = setTimeout(sizeCanvas, 200);
+  function bootScratchCanvas() {
+    sizeCanvas();
+    requestAnimationFrame(sizeCanvas);
+  }
+
+  bootScratchCanvas();
+  window.addEventListener("load", bootScratchCanvas, { once: true });
+  window.addEventListener("orientationchange", () => {
+    setTimeout(bootScratchCanvas, 250);
   });
-});
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", bootScratchCanvas);
+  }
+
+  if ("ResizeObserver" in window) {
+    const ro = new ResizeObserver(() => {
+      if (revealed) return;
+      sizeCanvas();
+    });
+    ro.observe(card);
+  } else {
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+      if (revealed) return;
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(sizeCanvas, 200);
+    });
+  }
+})();
 
 // ===== Gallery flipbook =====
-whenVisible(document.getElementById("galleryFlipbook"), function () {
+(function initFlipbook() {
   const flipbook = document.getElementById("galleryFlipbook");
   if (!flipbook) return;
 
@@ -526,8 +696,9 @@ whenVisible(document.getElementById("galleryFlipbook"), function () {
   const total = cards.length;
   let current = 0;
   let animating = false;
-  let touchStartX = 0;
-  let touched = false;
+  let dragStartX = 0;
+  let dragActive = false;
+  let suppressClick = false;
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   totalEl.textContent = String(total);
@@ -639,23 +810,31 @@ whenVisible(document.getElementById("galleryFlipbook"), function () {
   });
 
   stage.addEventListener("click", () => {
-    if (touched) {
-      touched = false;
+    if (suppressClick) {
+      suppressClick = false;
       return;
     }
     flip("next");
   });
 
-  stage.addEventListener("touchstart", (e) => {
-    touched = true;
-    touchStartX = e.changedTouches[0].clientX;
-  }, { passive: true });
+  stage.addEventListener("pointerdown", (e) => {
+    if (e.pointerType === "mouse" && e.button !== 0) return;
+    dragActive = true;
+    dragStartX = e.clientX;
+  });
 
-  stage.addEventListener("touchend", (e) => {
-    const delta = e.changedTouches[0].clientX - touchStartX;
+  stage.addEventListener("pointerup", (e) => {
+    if (!dragActive) return;
+    dragActive = false;
+    const delta = e.clientX - dragStartX;
     if (Math.abs(delta) < 40) return;
+    suppressClick = true;
     flip(delta < 0 ? "next" : "prev");
-  }, { passive: true });
+  });
+
+  stage.addEventListener("pointercancel", () => {
+    dragActive = false;
+  });
 
   flipbook.setAttribute("tabindex", "0");
   flipbook.addEventListener("keydown", (e) => {
@@ -670,4 +849,4 @@ whenVisible(document.getElementById("galleryFlipbook"), function () {
   });
 
   applyStack();
-});
+})();
