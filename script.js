@@ -235,25 +235,42 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   const toggle = document.getElementById("musicToggle");
   if (!audio) return;
 
+  const MUSIC_SRC = "assets/until-i-found-you.mp3";
   const MUSIC_VOLUME = 0.22;
   const STORAGE_KEY = "sarwam-yashna-music-muted";
-  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   let unlocked = false;
-  let userMuted = prefersReduced;
+  let userMuted = false;
+  let wantsPlay = false;
+  let lastGestureAt = 0;
 
   try {
     if (sessionStorage.getItem(STORAGE_KEY) === "1") userMuted = true;
   } catch (_) {}
 
+  if (!audio.getAttribute("src")) audio.src = MUSIC_SRC;
+
+  function coalesceGesture() {
+    const now = Date.now();
+    if (now - lastGestureAt < 100) return false;
+    lastGestureAt = now;
+    return true;
+  }
+
   function updateToggleUi() {
     if (!toggle) return;
+    const isPlaying = !audio.paused && !userMuted;
     toggle.setAttribute("aria-pressed", userMuted ? "true" : "false");
     toggle.setAttribute("aria-label", userMuted ? "Turn music on" : "Turn music off");
     toggle.classList.toggle("is-muted", userMuted);
+    toggle.classList.toggle("is-paused", !userMuted && audio.paused && unlocked);
     const onIcon = toggle.querySelector(".music-toggle-icon--on");
     const offIcon = toggle.querySelector(".music-toggle-icon--off");
     if (onIcon) onIcon.hidden = userMuted;
     if (offIcon) offIcon.hidden = !userMuted;
+    const label = toggle.querySelector(".music-toggle-label");
+    if (label) {
+      label.textContent = userMuted ? "Music off" : (isPlaying ? "Music" : "Tap for music");
+    }
   }
 
   function persistMute() {
@@ -263,44 +280,38 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   }
 
   function playMusic() {
-    if (!unlocked || userMuted) return;
-    audio.volume = MUSIC_VOLUME;
-    audio.muted = false;
-    const attempt = audio.play();
-    if (attempt && typeof attempt.catch === "function") {
-      attempt.catch(() => {});
+    if (userMuted) {
+      wantsPlay = false;
+      return Promise.resolve();
     }
+    unlocked = true;
+    wantsPlay = true;
+    audio.muted = false;
+    audio.volume = MUSIC_VOLUME;
+    return audio.play().then(() => {
+      wantsPlay = false;
+      updateToggleUi();
+    }).catch(() => {
+      updateToggleUi();
+    });
   }
 
   function pauseMusic() {
     audio.pause();
+    updateToggleUi();
   }
 
-  function unlockFromGesture() {
-    if (unlocked) return Promise.resolve();
-    audio.load();
-    audio.volume = 0;
-    audio.muted = true;
-    const attempt = audio.play();
-    if (!attempt || typeof attempt.then !== "function") {
-      unlocked = true;
-      return Promise.resolve();
-    }
-    return attempt.then(() => {
-      audio.pause();
-      audio.currentTime = 0;
-      audio.muted = false;
-      audio.volume = MUSIC_VOLUME;
-      unlocked = true;
-    }).catch(() => {
-      unlocked = true;
-    });
+  function beginFromUserGesture() {
+    if (!coalesceGesture()) return playMusic();
+    unlocked = true;
+    if (toggle) toggle.hidden = false;
+    return playMusic();
   }
 
   function onGateDismissed() {
     if (toggle) toggle.hidden = false;
     updateToggleUi();
-    playMusic();
+    if (!userMuted && audio.paused) playMusic();
   }
 
   function setMuted(muted) {
@@ -311,21 +322,36 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     else playMusic();
   }
 
-  toggle?.addEventListener("click", () => {
-    if (!unlocked) {
-      unlockFromGesture().then(() => setMuted(false));
+  function handleToggle(e) {
+    e.stopPropagation();
+    if (userMuted) {
+      setMuted(false);
       return;
     }
-    setMuted(!userMuted);
+    if (audio.paused) playMusic();
+    else setMuted(true);
+  }
+
+  toggle?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    handleToggle(e);
+  });
+
+  audio.addEventListener("play", updateToggleUi);
+  audio.addEventListener("pause", updateToggleUi);
+  audio.addEventListener("canplay", () => {
+    if (wantsPlay && !userMuted && audio.paused) {
+      audio.play().catch(() => {});
+    }
   });
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) pauseMusic();
-    else playMusic();
+    else if (!userMuted && unlocked) playMusic();
   });
 
   window.SiteMusic = {
-    unlockFromGesture,
+    beginFromUserGesture,
     onGateDismissed,
     playMusic,
     pauseMusic,
@@ -406,17 +432,24 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     setTimeout(dismissGate, prefersReduced ? 250 : 2400);
   }
 
+  function triggerMusicFromGesture() {
+    window.SiteMusic?.beginFromUserGesture?.();
+  }
+
+  envelope.addEventListener("pointerdown", triggerMusicFromGesture);
+  envelope.addEventListener("touchstart", triggerMusicFromGesture, { passive: true });
+
   envelope.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    window.SiteMusic?.unlockFromGesture();
+    triggerMusicFromGesture();
     openEnvelope();
   });
   envelope.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       e.stopPropagation();
-      window.SiteMusic?.unlockFromGesture();
+      triggerMusicFromGesture();
       openEnvelope();
     }
   });
@@ -428,15 +461,14 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   });
 
   if (skipBtn) {
+    const skipMusic = () => window.SiteMusic?.beginFromUserGesture?.();
+    skipBtn.addEventListener("pointerdown", skipMusic);
+    skipBtn.addEventListener("touchstart", skipMusic, { passive: true });
     skipBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      const unlock = window.SiteMusic?.unlockFromGesture?.();
-      if (unlock && typeof unlock.then === "function") {
-        unlock.then(() => dismissGate());
-      } else {
-        dismissGate();
-      }
+      skipMusic();
+      dismissGate();
     });
   }
 })();
