@@ -229,6 +229,111 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   });
 })();
 
+// ===== Background music (Until I Found You) =====
+(function initSiteMusic() {
+  const audio = document.getElementById("siteMusic");
+  const toggle = document.getElementById("musicToggle");
+  if (!audio) return;
+
+  const MUSIC_VOLUME = 0.22;
+  const STORAGE_KEY = "sarwam-yashna-music-muted";
+  const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let unlocked = false;
+  let userMuted = prefersReduced;
+
+  try {
+    if (sessionStorage.getItem(STORAGE_KEY) === "1") userMuted = true;
+  } catch (_) {}
+
+  function updateToggleUi() {
+    if (!toggle) return;
+    toggle.setAttribute("aria-pressed", userMuted ? "true" : "false");
+    toggle.setAttribute("aria-label", userMuted ? "Turn music on" : "Turn music off");
+    toggle.classList.toggle("is-muted", userMuted);
+    const onIcon = toggle.querySelector(".music-toggle-icon--on");
+    const offIcon = toggle.querySelector(".music-toggle-icon--off");
+    if (onIcon) onIcon.hidden = userMuted;
+    if (offIcon) offIcon.hidden = !userMuted;
+  }
+
+  function persistMute() {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, userMuted ? "1" : "0");
+    } catch (_) {}
+  }
+
+  function playMusic() {
+    if (!unlocked || userMuted) return;
+    audio.volume = MUSIC_VOLUME;
+    audio.muted = false;
+    const attempt = audio.play();
+    if (attempt && typeof attempt.catch === "function") {
+      attempt.catch(() => {});
+    }
+  }
+
+  function pauseMusic() {
+    audio.pause();
+  }
+
+  function unlockFromGesture() {
+    if (unlocked) return Promise.resolve();
+    audio.load();
+    audio.volume = 0;
+    audio.muted = true;
+    const attempt = audio.play();
+    if (!attempt || typeof attempt.then !== "function") {
+      unlocked = true;
+      return Promise.resolve();
+    }
+    return attempt.then(() => {
+      audio.pause();
+      audio.currentTime = 0;
+      audio.muted = false;
+      audio.volume = MUSIC_VOLUME;
+      unlocked = true;
+    }).catch(() => {
+      unlocked = true;
+    });
+  }
+
+  function onGateDismissed() {
+    if (toggle) toggle.hidden = false;
+    updateToggleUi();
+    playMusic();
+  }
+
+  function setMuted(muted) {
+    userMuted = muted;
+    persistMute();
+    updateToggleUi();
+    if (muted) pauseMusic();
+    else playMusic();
+  }
+
+  toggle?.addEventListener("click", () => {
+    if (!unlocked) {
+      unlockFromGesture().then(() => setMuted(false));
+      return;
+    }
+    setMuted(!userMuted);
+  });
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) pauseMusic();
+    else playMusic();
+  });
+
+  window.SiteMusic = {
+    unlockFromGesture,
+    onGateDismissed,
+    playMusic,
+    pauseMusic,
+  };
+
+  updateToggleUi();
+})();
+
 // ===== Envelope opening gate =====
 (function () {
   const gate = document.getElementById("gate");
@@ -289,6 +394,8 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       gate.style.display = "none";
       gate.setAttribute("aria-hidden", "true");
     }, prefersReduced ? 150 : 500);
+
+    window.SiteMusic?.onGateDismissed();
   }
 
   function openEnvelope() {
@@ -302,12 +409,14 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   envelope.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
+    window.SiteMusic?.unlockFromGesture();
     openEnvelope();
   });
   envelope.addEventListener("keydown", (e) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
       e.stopPropagation();
+      window.SiteMusic?.unlockFromGesture();
       openEnvelope();
     }
   });
@@ -322,7 +431,12 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     skipBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      dismissGate();
+      const unlock = window.SiteMusic?.unlockFromGesture?.();
+      if (unlock && typeof unlock.then === "function") {
+        unlock.then(() => dismissGate());
+      } else {
+        dismissGate();
+      }
     });
   }
 })();
