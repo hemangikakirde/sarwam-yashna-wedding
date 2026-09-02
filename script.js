@@ -241,6 +241,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   let unlocked = false;
   let userMuted = false;
   let wantsPlay = false;
+  let awaitingHome = false;
   let lastGestureAt = 0;
 
   try {
@@ -258,11 +259,11 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
   function updateToggleUi() {
     if (!toggle) return;
-    const isPlaying = !audio.paused && !userMuted;
+    const isPlaying = !audio.paused && !userMuted && !awaitingHome && audio.volume > 0;
     toggle.setAttribute("aria-pressed", userMuted ? "true" : "false");
     toggle.setAttribute("aria-label", userMuted ? "Turn music on" : "Turn music off");
     toggle.classList.toggle("is-muted", userMuted);
-    toggle.classList.toggle("is-paused", !userMuted && audio.paused && unlocked);
+    toggle.classList.toggle("is-paused", !userMuted && (audio.paused || awaitingHome) && unlocked);
     const onIcon = toggle.querySelector(".music-toggle-icon--on");
     const offIcon = toggle.querySelector(".music-toggle-icon--off");
     if (onIcon) onIcon.hidden = userMuted;
@@ -282,14 +283,16 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   function playMusic() {
     if (userMuted) {
       wantsPlay = false;
+      awaitingHome = false;
       return Promise.resolve();
     }
     unlocked = true;
-    wantsPlay = true;
+    awaitingHome = false;
+    wantsPlay = false;
     audio.muted = false;
     audio.volume = MUSIC_VOLUME;
+    if (toggle) toggle.hidden = false;
     return audio.play().then(() => {
-      wantsPlay = false;
       updateToggleUi();
     }).catch(() => {
       updateToggleUi();
@@ -301,17 +304,37 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     updateToggleUi();
   }
 
-  function beginFromUserGesture() {
-    if (!coalesceGesture()) return playMusic();
+  function prepareFromUserGesture() {
+    if (userMuted) return Promise.resolve();
+    if (!coalesceGesture() && unlocked) return Promise.resolve();
     unlocked = true;
-    if (toggle) toggle.hidden = false;
-    return playMusic();
+    awaitingHome = true;
+    wantsPlay = true;
+    audio.muted = false;
+    audio.volume = 0;
+    audio.currentTime = 0;
+    return audio.play().then(() => {
+      updateToggleUi();
+    }).catch(() => {
+      updateToggleUi();
+    });
   }
 
   function onGateDismissed() {
     if (toggle) toggle.hidden = false;
-    updateToggleUi();
-    if (!userMuted && audio.paused) playMusic();
+    if (userMuted) {
+      awaitingHome = false;
+      wantsPlay = false;
+      audio.pause();
+      updateToggleUi();
+      return;
+    }
+    if (!unlocked && !wantsPlay) {
+      updateToggleUi();
+      return;
+    }
+    audio.currentTime = 0;
+    playMusic();
   }
 
   function setMuted(muted) {
@@ -340,18 +363,24 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   audio.addEventListener("play", updateToggleUi);
   audio.addEventListener("pause", updateToggleUi);
   audio.addEventListener("canplay", () => {
-    if (wantsPlay && !userMuted && audio.paused) {
+    if (userMuted) return;
+    if (awaitingHome && audio.paused) {
+      audio.volume = 0;
+      audio.play().catch(() => {});
+      return;
+    }
+    if (wantsPlay && !awaitingHome && audio.paused) {
       audio.play().catch(() => {});
     }
   });
 
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) pauseMusic();
-    else if (!userMuted && unlocked) playMusic();
+    else if (!userMuted && unlocked && !awaitingHome) playMusic();
   });
 
   window.SiteMusic = {
-    beginFromUserGesture,
+    prepareFromUserGesture,
     onGateDismissed,
     playMusic,
     pauseMusic,
@@ -433,7 +462,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   }
 
   function triggerMusicFromGesture() {
-    window.SiteMusic?.beginFromUserGesture?.();
+    window.SiteMusic?.prepareFromUserGesture?.();
   }
 
   envelope.addEventListener("pointerdown", triggerMusicFromGesture);
@@ -461,7 +490,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   });
 
   if (skipBtn) {
-    const skipMusic = () => window.SiteMusic?.beginFromUserGesture?.();
+    const skipMusic = () => window.SiteMusic?.prepareFromUserGesture?.();
     skipBtn.addEventListener("pointerdown", skipMusic);
     skipBtn.addEventListener("touchstart", skipMusic, { passive: true });
     skipBtn.addEventListener("click", (e) => {
