@@ -254,6 +254,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   let wantsPlay = false;
   let awaitingHome = false;
   let gateDismissedForMusic = false;
+  let playbackBegun = false;
   let lastGestureAt = 0;
 
   try {
@@ -296,6 +297,16 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     } catch (_) {}
   }
 
+  function safePlay() {
+    if (!audio.paused) return Promise.resolve();
+    return audio.play().catch(() => {});
+  }
+
+  function applyAudibleVolume() {
+    audio.muted = false;
+    audio.volume = MUSIC_VOLUME;
+  }
+
   function ensureAudiblePlayback() {
     if (userMuted) {
       wantsPlay = false;
@@ -303,17 +314,15 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     }
     unlocked = true;
     awaitingHome = false;
-    audio.muted = false;
-    audio.volume = MUSIC_VOLUME;
+    wantsPlay = false;
     if (toggle) toggle.hidden = false;
-    if (!audio.paused && audio.volume > 0) {
-      wantsPlay = false;
+    applyAudibleVolume();
+    if (!audio.paused) {
       updateToggleUi();
       return Promise.resolve();
     }
-    wantsPlay = true;
-    return audio.play().then(() => {
-      wantsPlay = false;
+    return safePlay().then(() => {
+      playbackBegun = true;
       updateToggleUi();
     }).catch(() => {
       updateToggleUi();
@@ -327,15 +336,16 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
   function prepareFromUserGesture() {
     if (userMuted) return Promise.resolve();
-    if (awaitingHome && !audio.paused) return Promise.resolve();
+    if (awaitingHome) return Promise.resolve();
     if (!coalesceGesture() && unlocked) return Promise.resolve();
     unlocked = true;
     awaitingHome = true;
     wantsPlay = true;
     audio.muted = false;
     audio.volume = 0;
-    if (audio.paused) audio.currentTime = 0;
-    return audio.play().then(() => {
+    if (!playbackBegun && audio.paused) audio.currentTime = 0;
+    return safePlay().then(() => {
+      playbackBegun = true;
       updateToggleUi();
     }).catch(() => {
       updateToggleUi();
@@ -352,15 +362,11 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       updateToggleUi();
       return;
     }
-    if (!audio.paused) {
-      awaitingHome = false;
-      wantsPlay = false;
-      audio.muted = false;
-      audio.volume = MUSIC_VOLUME;
-      updateToggleUi();
-      return;
-    }
-    ensureAudiblePlayback();
+    awaitingHome = false;
+    wantsPlay = false;
+    applyAudibleVolume();
+    if (audio.paused) safePlay().then(updateToggleUi).catch(updateToggleUi);
+    else updateToggleUi();
   }
 
   function setExplicitlyMuted(muted) {
@@ -390,15 +396,16 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   audio.addEventListener("play", updateToggleUi);
   audio.addEventListener("pause", updateToggleUi);
   audio.addEventListener("canplay", () => {
-    if (userMuted) return;
-    if (awaitingHome && audio.paused) {
+    if (userMuted || !audio.paused) return;
+    if (awaitingHome) {
       audio.volume = 0;
-      audio.play().catch(() => {});
+      safePlay().then(() => {
+        playbackBegun = true;
+        updateToggleUi();
+      });
       return;
     }
-    if (wantsPlay && !awaitingHome && audio.paused) {
-      ensureAudiblePlayback();
-    }
+    if (wantsPlay && gateDismissedForMusic) ensureAudiblePlayback();
   });
 
   document.addEventListener("visibilitychange", () => {
@@ -520,12 +527,12 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   });
 
   if (skipBtn) {
-    const skipMusic = () => window.SiteMusic?.prepareFromUserGesture?.();
-    skipBtn.addEventListener("pointerdown", skipMusic);
+    skipBtn.addEventListener("pointerdown", () => {
+      window.SiteMusic?.prepareFromUserGesture?.();
+    });
     skipBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      skipMusic();
       dismissGate();
     });
   }
