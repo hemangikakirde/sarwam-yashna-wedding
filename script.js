@@ -253,6 +253,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   let userMuted = false;
   let wantsPlay = false;
   let awaitingHome = false;
+  let gateDismissedForMusic = false;
   let lastGestureAt = 0;
 
   try {
@@ -268,13 +269,17 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     return true;
   }
 
+  function isAudible() {
+    return !audio.paused && audio.volume > 0 && !userMuted;
+  }
+
   function updateToggleUi() {
     if (!toggle) return;
-    const isPlaying = !audio.paused && !userMuted && !awaitingHome && audio.volume > 0;
+    const isPlaying = isAudible() && !awaitingHome;
     toggle.setAttribute("aria-pressed", userMuted ? "true" : "false");
     toggle.setAttribute("aria-label", userMuted ? "Turn music on" : "Turn music off");
     toggle.classList.toggle("is-muted", userMuted);
-    toggle.classList.toggle("is-paused", !userMuted && (audio.paused || awaitingHome) && unlocked);
+    toggle.classList.toggle("is-paused", !userMuted && !isPlaying && (unlocked || gateDismissedForMusic));
     const onIcon = toggle.querySelector(".music-toggle-icon--on");
     const offIcon = toggle.querySelector(".music-toggle-icon--off");
     if (onIcon) onIcon.hidden = userMuted;
@@ -291,19 +296,24 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     } catch (_) {}
   }
 
-  function playMusic() {
+  function ensureAudiblePlayback() {
     if (userMuted) {
       wantsPlay = false;
-      awaitingHome = false;
       return Promise.resolve();
     }
     unlocked = true;
     awaitingHome = false;
-    wantsPlay = false;
     audio.muted = false;
     audio.volume = MUSIC_VOLUME;
     if (toggle) toggle.hidden = false;
+    if (!audio.paused && audio.volume > 0) {
+      wantsPlay = false;
+      updateToggleUi();
+      return Promise.resolve();
+    }
+    wantsPlay = true;
     return audio.play().then(() => {
+      wantsPlay = false;
       updateToggleUi();
     }).catch(() => {
       updateToggleUi();
@@ -317,7 +327,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
   function prepareFromUserGesture() {
     if (userMuted) return Promise.resolve();
-    if (awaitingHome) return Promise.resolve();
+    if (awaitingHome && !audio.paused) return Promise.resolve();
     if (!coalesceGesture() && unlocked) return Promise.resolve();
     unlocked = true;
     awaitingHome = true;
@@ -333,6 +343,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   }
 
   function onGateDismissed() {
+    gateDismissedForMusic = true;
     if (toggle) toggle.hidden = false;
     if (userMuted) {
       awaitingHome = false;
@@ -341,43 +352,39 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       updateToggleUi();
       return;
     }
-    if (!unlocked && !wantsPlay) {
+    if (!audio.paused) {
+      awaitingHome = false;
+      wantsPlay = false;
+      audio.muted = false;
+      audio.volume = MUSIC_VOLUME;
       updateToggleUi();
       return;
     }
-    awaitingHome = false;
-    wantsPlay = false;
-    audio.muted = false;
-    audio.volume = MUSIC_VOLUME;
-    if (audio.paused) {
-      audio.currentTime = 0;
-      audio.play().then(updateToggleUi).catch(updateToggleUi);
-    } else {
-      updateToggleUi();
-    }
+    ensureAudiblePlayback();
   }
 
-  function setMuted(muted) {
+  function setExplicitlyMuted(muted) {
     userMuted = muted;
     persistMute();
     updateToggleUi();
-    if (muted) pauseMusic();
-    else playMusic();
-  }
-
-  function handleToggle(e) {
-    e.stopPropagation();
-    if (userMuted) {
-      setMuted(false);
+    if (muted) {
+      wantsPlay = false;
+      awaitingHome = false;
+      pauseMusic();
       return;
     }
-    if (audio.paused) playMusic();
-    else setMuted(true);
+    ensureAudiblePlayback();
+  }
+
+  function tryResumeOnInteraction() {
+    if (!gateDismissedForMusic || userMuted || awaitingHome) return;
+    if (isAudible()) return;
+    ensureAudiblePlayback();
   }
 
   toggle?.addEventListener("click", (e) => {
     e.stopPropagation();
-    handleToggle(e);
+    setExplicitlyMuted(!userMuted);
   });
 
   audio.addEventListener("play", updateToggleUi);
@@ -390,19 +397,24 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return;
     }
     if (wantsPlay && !awaitingHome && audio.paused) {
-      audio.play().catch(() => {});
+      ensureAudiblePlayback();
     }
   });
 
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden) pauseMusic();
-    else if (!userMuted && unlocked && !awaitingHome) playMusic();
+    if (document.hidden) {
+      if (!audio.paused) pauseMusic();
+      return;
+    }
+    if (!userMuted && gateDismissedForMusic) ensureAudiblePlayback();
   });
+
+  document.addEventListener("pointerdown", tryResumeOnInteraction, { passive: true });
 
   window.SiteMusic = {
     prepareFromUserGesture,
     onGateDismissed,
-    playMusic,
+    playMusic: ensureAudiblePlayback,
     pauseMusic,
   };
 
