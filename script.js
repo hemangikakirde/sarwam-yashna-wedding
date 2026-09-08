@@ -27,13 +27,16 @@ function whenVisible(el, fn, rootMargin = "120px") {
   observer.observe(el);
 }
 
-const weddingDate = new Date("2026-11-15T09:00:00+05:30").getTime();
+const weddingDate = new Date("2026-11-15T12:05:00+05:30").getTime();
+const COUNTDOWN_ALMOST_THERE_DAYS = 21;
+const COUNTDOWN_THIS_WEEK_DAYS = 7;
 
 function updateCountdown() {
   const daysEl = document.getElementById("days");
   const hoursEl = document.getElementById("hours");
   const minutesEl = document.getElementById("minutes");
   const secondsEl = document.getElementById("seconds");
+  const labelEl = document.getElementById("datesCountdownLabel");
   if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
 
   const now = Date.now();
@@ -49,6 +52,14 @@ function updateCountdown() {
   hoursEl.textContent = String(h).padStart(2, "0");
   minutesEl.textContent = String(m).padStart(2, "0");
   secondsEl.textContent = String(s).padStart(2, "0");
+
+  if (labelEl) {
+    let labelHtml = 'Until we say <em>forever</em>';
+    if (distance === 0) labelHtml = "And so it begins.";
+    else if (d <= COUNTDOWN_THIS_WEEK_DAYS) labelHtml = "This week.";
+    else if (d <= COUNTDOWN_ALMOST_THERE_DAYS) labelHtml = "Almost there";
+    if (labelEl.innerHTML !== labelHtml) labelEl.innerHTML = labelHtml;
+  }
 }
 updateCountdown();
 setInterval(updateCountdown, 1000);
@@ -526,6 +537,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   const calendarActions = document.getElementById("calendarActions");
   const addToCalendarBtn = document.getElementById("addToCalendar");
   const scratchHint = document.getElementById("scratchHint");
+  const scratchCelebrate = document.getElementById("scratchCelebrate");
   const ctx = canvas.getContext("2d", { willReadFrequently: false });
   let dpr = Math.max(window.devicePixelRatio || 1, 1);
   let cssW = 0, cssH = 0;
@@ -584,13 +596,23 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       "PRODID:-//Sarwam & Yashna//Wedding//EN",
       "CALSCALE:GREGORIAN",
       "METHOD:PUBLISH",
+      "BEGIN:VTIMEZONE",
+      "TZID:Asia/Kolkata",
+      "X-LIC-LOCATION:Asia/Kolkata",
+      "BEGIN:STANDARD",
+      "TZOFFSETFROM:+0530",
+      "TZOFFSETTO:+0530",
+      "TZNAME:IST",
+      "DTSTART:19700101T000000",
+      "END:STANDARD",
+      "END:VTIMEZONE",
       "BEGIN:VEVENT",
       "UID:sarwam-yashna-wedding-20261115@invitation",
       `DTSTAMP:${stamp}`,
-      "DTSTART;VALUE=DATE:20261115",
-      "DTEND;VALUE=DATE:20261116",
-      "SUMMARY:Sarwam & Yashna - Wedding",
-      "DESCRIPTION:Haldi & Sangeet on 14 Nov. Wedding muhurta 12:05 PM & Reception on 15 Nov at Samarambh Lawns\\, Thane.",
+      "DTSTART;TZID=Asia/Kolkata:20261115T120500",
+      "DTEND;TZID=Asia/Kolkata:20261115T130500",
+      "SUMMARY:Sarwam & Yashna - Wedding Muhurta",
+      "DESCRIPTION:Wedding muhurta at 12:05 PM. Morning rituals from 7:30 AM. Reception at 6:30 PM at Samarambh Lawns\\, Thane.",
       "LOCATION:Samarambh Lawns\\, Thane\\, Maharashtra",
       "END:VEVENT",
       "END:VCALENDAR"
@@ -607,6 +629,41 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     URL.revokeObjectURL(url);
   }
 
+  function playRevealCelebration() {
+    if (!scratchCelebrate) return;
+    const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    scratchCelebrate.replaceChildren();
+    scratchCelebrate.classList.remove("is-active", "is-shimmer");
+    void scratchCelebrate.offsetWidth;
+    scratchCelebrate.classList.add("is-active", "is-shimmer");
+
+    if (!prefersReduced) {
+      const colors = ["#e4c37f", "#c9923a", "#f0d080", "#d4a017", "#6b1420"];
+      const count = window.matchMedia("(max-width: 800px)").matches ? 14 : 18;
+      for (let i = 0; i < count; i++) {
+        const piece = document.createElement("span");
+        piece.className = "scratch-confetti";
+        piece.style.left = `${18 + Math.random() * 64}%`;
+        piece.style.top = `${32 + Math.random() * 36}%`;
+        piece.style.width = `${3 + Math.random() * 4}px`;
+        piece.style.height = `${3 + Math.random() * 3}px`;
+        piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+        piece.style.setProperty("--drift-x", `${-36 + Math.random() * 72}px`);
+        piece.style.setProperty("--drift-y", `${-72 - Math.random() * 64}px`);
+        piece.style.setProperty("--spin", `${90 + Math.random() * 220}deg`);
+        piece.style.animationDelay = `${Math.random() * 0.35}s`;
+        if (Math.random() > 0.55) piece.style.borderRadius = "1px";
+        scratchCelebrate.appendChild(piece);
+        requestAnimationFrame(() => piece.classList.add("is-floating"));
+      }
+    }
+
+    setTimeout(() => {
+      scratchCelebrate.classList.remove("is-active", "is-shimmer");
+      scratchCelebrate.replaceChildren();
+    }, 3800);
+  }
+
   function revealCard() {
     if (revealed) return;
     revealed = true;
@@ -621,6 +678,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
     const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     card.classList.add("is-revealed");
+    playRevealCelebration();
     setTimeout(showCalendarAction, prefersReduced ? 0 : 700);
 
     if (prefersReduced) {
@@ -879,12 +937,27 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   const total = cards.length;
   let current = 0;
   let animating = false;
+  let holdNavLock = false;
+  let navQueue = Promise.resolve();
   let dragStartX = 0;
   let dragActive = false;
   let suppressClick = false;
   const prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   totalEl.textContent = String(total);
+
+  function setNavBusy(busy) {
+    animating = busy;
+    prevBtn.disabled = busy;
+    nextBtn.disabled = busy;
+    dots.forEach((dot) => {
+      dot.disabled = busy;
+    });
+  }
+
+  function enqueueNav(task) {
+    navQueue = navQueue.then(task).catch(() => {});
+  }
 
   cards.forEach((_, i) => {
     const dot = document.createElement("button");
@@ -916,8 +989,6 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     captionEl.textContent = cards[current].dataset.caption || "";
     currentEl.textContent = String(current + 1);
     dots.forEach((dot, i) => dot.classList.toggle("is-active", i === current));
-    prevBtn.disabled = animating;
-    nextBtn.disabled = animating;
   }
 
   function wait(ms) {
@@ -925,10 +996,8 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   }
 
   async function flip(direction) {
-    if (animating || total < 2) return;
-    animating = true;
-    prevBtn.disabled = true;
-    nextBtn.disabled = true;
+    if ((animating && !holdNavLock) || total < 2) return;
+    setNavBusy(true);
 
     const nextIndex = direction === "next"
       ? (current + 1) % total
@@ -937,9 +1006,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     if (prefersReduced) {
       current = nextIndex;
       applyStack();
-      animating = false;
-      prevBtn.disabled = false;
-      nextBtn.disabled = false;
+      if (!holdNavLock) setNavBusy(false);
       return;
     }
 
@@ -964,32 +1031,41 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       applyStack();
     }
 
-    animating = false;
-    prevBtn.disabled = false;
-    nextBtn.disabled = false;
+    if (!holdNavLock) setNavBusy(false);
+  }
+
+  function requestFlip(direction) {
+    enqueueNav(() => flip(direction));
   }
 
   function goTo(index) {
-    if (animating || index === current) return;
-    const forwardSteps = (index - current + total) % total;
-    const backwardSteps = (current - index + total) % total;
-    const direction = forwardSteps <= backwardSteps ? "next" : "prev";
-    const steps = direction === "next" ? forwardSteps : backwardSteps;
-
-    (async () => {
-      for (let i = 0; i < steps; i++) {
-        await flip(direction);
+    if (index === current) return;
+    enqueueNav(async () => {
+      if (index === current || animating) return;
+      const forwardSteps = (index - current + total) % total;
+      const backwardSteps = (current - index + total) % total;
+      const direction = forwardSteps <= backwardSteps ? "next" : "prev";
+      const steps = direction === "next" ? forwardSteps : backwardSteps;
+      holdNavLock = true;
+      setNavBusy(true);
+      try {
+        for (let i = 0; i < steps; i++) {
+          await flip(direction);
+        }
+      } finally {
+        holdNavLock = false;
+        setNavBusy(false);
       }
-    })();
+    });
   }
 
   prevBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    flip("prev");
+    requestFlip("prev");
   });
   nextBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    flip("next");
+    requestFlip("next");
   });
 
   stage.addEventListener("click", () => {
@@ -997,7 +1073,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       suppressClick = false;
       return;
     }
-    flip("next");
+    requestFlip("next");
   });
 
   stage.addEventListener("pointerdown", (e) => {
@@ -1012,7 +1088,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     const delta = e.clientX - dragStartX;
     if (Math.abs(delta) < 40) return;
     suppressClick = true;
-    flip(delta < 0 ? "next" : "prev");
+    requestFlip(delta < 0 ? "next" : "prev");
   });
 
   stage.addEventListener("pointercancel", () => {
@@ -1023,11 +1099,11 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   flipbook.addEventListener("keydown", (e) => {
     if (e.key === "ArrowRight") {
       e.preventDefault();
-      flip("next");
+      requestFlip("next");
     }
     if (e.key === "ArrowLeft") {
       e.preventDefault();
-      flip("prev");
+      requestFlip("prev");
     }
   });
 
