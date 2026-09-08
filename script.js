@@ -317,13 +317,14 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
 
   function prepareFromUserGesture() {
     if (userMuted) return Promise.resolve();
+    if (awaitingHome) return Promise.resolve();
     if (!coalesceGesture() && unlocked) return Promise.resolve();
     unlocked = true;
     awaitingHome = true;
     wantsPlay = true;
     audio.muted = false;
     audio.volume = 0;
-    audio.currentTime = 0;
+    if (audio.paused) audio.currentTime = 0;
     return audio.play().then(() => {
       updateToggleUi();
     }).catch(() => {
@@ -347,9 +348,9 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     awaitingHome = false;
     wantsPlay = false;
     audio.muted = false;
-    audio.currentTime = 0;
     audio.volume = MUSIC_VOLUME;
     if (audio.paused) {
+      audio.currentTime = 0;
       audio.play().then(updateToggleUi).catch(updateToggleUi);
     } else {
       updateToggleUi();
@@ -485,12 +486,10 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   }
 
   envelope.addEventListener("pointerdown", triggerMusicFromGesture);
-  envelope.addEventListener("touchstart", triggerMusicFromGesture, { passive: true });
 
   envelope.addEventListener("click", (e) => {
     e.preventDefault();
     e.stopPropagation();
-    triggerMusicFromGesture();
     openEnvelope();
   });
   envelope.addEventListener("keydown", (e) => {
@@ -511,7 +510,6 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   if (skipBtn) {
     const skipMusic = () => window.SiteMusic?.prepareFromUserGesture?.();
     skipBtn.addEventListener("pointerdown", skipMusic);
-    skipBtn.addEventListener("touchstart", skipMusic, { passive: true });
     skipBtn.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
