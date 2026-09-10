@@ -629,7 +629,7 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       "DTSTART;TZID=Asia/Kolkata:20261115T120500",
       "DTEND;TZID=Asia/Kolkata:20261115T130500",
       "SUMMARY:Sarwam & Yashna - Wedding Muhurta",
-      "DESCRIPTION:Wedding muhurta at 12:05 PM. Morning rituals from 7:30 AM. Reception at 6:30 PM at Samarambh Lawns\\, Thane.",
+      "DESCRIPTION:Wedding muhurta at 12:05 PM. Morning rituals from 8 AM. Reception at 6:30 PM at Samarambh Lawns\\, Thane.",
       "LOCATION:Samarambh Lawns\\, Thane\\, Maharashtra",
       "END:VEVENT",
       "END:VCALENDAR"
@@ -946,7 +946,6 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
   const cards = Array.from(flipbook.querySelectorAll(".flipbook-card"));
   const prevBtn = flipbook.querySelector(".flipbook-prev");
   const nextBtn = flipbook.querySelector(".flipbook-next");
-  const captionEl = flipbook.querySelector(".flipbook-caption");
   const currentEl = flipbook.querySelector(".flipbook-current");
   const totalEl = flipbook.querySelector(".flipbook-total");
   const dotsEl = flipbook.querySelector(".flipbook-dots");
@@ -1003,7 +1002,6 @@ if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       else card.classList.add("stack-hidden");
     });
 
-    captionEl.textContent = cards[current].dataset.caption || "";
     currentEl.textContent = String(current + 1);
     dots.forEach((dot, i) => dot.classList.toggle("is-active", i === current));
   }
