@@ -88,59 +88,6 @@ runWhenIdle(function () {
   }
 });
 
-const rsvpForm = document.getElementById("rsvpForm");
-if (rsvpForm) rsvpForm.addEventListener("submit", async function (event) {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const data = new FormData(form);
-  const note = document.getElementById("formNote");
-  const submitBtn = document.getElementById("rsvpSubmit");
-  const inbox = (window.RSVP_EMAIL || "").trim();
-
-  if (data.get("website")) return;
-
-  const name = String(data.get("name") || "").trim();
-  const contact = String(data.get("contact") || "").trim();
-  const attendance = String(data.get("attendance") || "").trim();
-  const message = String(data.get("message") || "").trim();
-
-  if (!inbox) {
-    note.textContent = "RSVP is not set up yet. Add your email in rsvp-config.js (see rsvp/SETUP.md).";
-    return;
-  }
-
-  if (submitBtn) submitBtn.disabled = true;
-  note.textContent = "Sending your RSVP…";
-
-  try {
-    const response = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(inbox)}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        name,
-        contact,
-        attendance,
-        message,
-        submitted: new Date().toISOString(),
-        _subject: "Wedding RSVP - Sarwam & Yashna",
-        _template: "table",
-        _captcha: "false"
-      })
-    });
-    const result = await response.json();
-    if (!result.success) throw new Error("Send failed");
-
-    note.textContent = attendance === "Joyfully, yes!"
-      ? `Thank you, ${name}! We can't wait to celebrate with you. ❤️`
-      : `Thank you for letting us know, ${name}. You'll be missed! ❤️`;
-    form.reset();
-  } catch (err) {
-    note.textContent = "We couldn't send your RSVP. Please try again in a moment.";
-  } finally {
-    if (submitBtn) submitBtn.disabled = false;
-  }
-});
-
 // Fade-in reveal on scroll
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
