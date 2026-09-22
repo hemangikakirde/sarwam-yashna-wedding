@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directions to Samarambh Lawns</title>
+  <meta name="robots" content="noindex">
+  <script>
+    (function () {
+      var place = "Samarambh Lawns, Thane, Maharashtra, India";
+      var encoded = encodeURIComponent(place);
+      var ua = navigator.userAgent || "";
+      var isApple = /iPad|iPhone|iPod/.test(ua)
+        || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      var url = isApple
+        ? "https://maps.apple.com/?daddr=" + encoded + "&dirflg=d"
+        : "https://www.google.com/maps/dir/?api=1&destination=" + encoded + "&travelmode=driving";
+      window.location.replace(url);
+    })();
+  </script>
+</head>
+<body>
+  <p style="font-family: system-ui, sans-serif; padding: 24px; text-align: center;">
+    Opening directions&hellip;
+    <br><br>
+    <a id="fallback" href="https://www.google.com/maps/dir/?api=1&amp;destination=Samarambh+Lawns,+Thane,+Maharashtra,+India&amp;travelmode=driving">Tap here if nothing opens</a>
+  </p>
+  <script>
+    (function () {
+      var place = "Samarambh Lawns, Thane, Maharashtra, India";
+      var encoded = encodeURIComponent(place);
+      var ua = navigator.userAgent || "";
+      var isApple = /iPad|iPhone|iPod/.test(ua)
+        || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+      var link = document.getElementById("fallback");
+      if (link) {
+        link.href = isApple
+          ? "https://maps.apple.com/?daddr=" + encoded + "&dirflg=d"
+          : "https://www.google.com/maps/dir/?api=1&destination=" + encoded + "&travelmode=driving";
+      }
+    })();
+  </script>
+</body>
+</html>
